@@ -1,6 +1,6 @@
 from .models import NNA, Therapist, Location
 from rest_framework import serializers
-from rest_framework.authtoken.models import Token
+from rest_framework.exceptions import ValidationError
 
 
 class NNASerializer(serializers.ModelSerializer):
@@ -8,6 +8,15 @@ class NNASerializer(serializers.ModelSerializer):
         model = NNA
         fields = ('email', 'password', 'name', 'surname', 'location', 'date_of_birth', 'mentor', 'status', 'id')
         extra_kwargs = {'password': {'write_only': True}}
+
+    def validate(self, data):
+        required_fields = ['email', 'password', 'name', 'surname', 'location', 'date_of_birth', 'mentor']
+        missing_fields = [field for field in required_fields if field not in data]
+
+        if missing_fields:
+            raise serializers.ValidationError(f"Missing fields: {', '.join(missing_fields)}")
+
+        return data
 
     def create(self, validated_data):
         user = NNA(
@@ -35,6 +44,10 @@ class LocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
         fields = ('id', 'name', 'address')
+
+
+
+
 
 
 
