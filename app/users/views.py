@@ -5,6 +5,9 @@ from rest_framework import generics
 from .serializers import NNASerializer, LocationSerializer, TherapistSerializer
 from django.contrib.auth import authenticate
 from .models import Location, Therapist, NNA
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+from .permissions import IsNNAUser
 
 # Create your views here.
 
@@ -23,14 +26,18 @@ class LoginView(APIView):
         password = request.data.get("password")
         user = authenticate(email=email, password=password)
         if user:
-            try:
-                user = NNA.objects.get(email=email)
-                return Response({"token": user.auth_token.key, "status": user.status}, status=status.HTTP_200_OK)
-            except:
-                user = Therapist.objects.get(email=email)
-                return Response({"token": user.auth_token.key}, status=status.HTTP_200_OK)
+            return Response({"token": user.auth_token.key}, status=status.HTTP_200_OK)
         else:
             return Response({"error": "Wrong Credentials"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class NNAStatus(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated, IsNNAUser]
+
+    def get(self, request):
+        user = NNA.objects.get(email=request.user.email)
+        return Response({"status": user.status}, status=status.HTTP_200_OK)
 
 
 class TherapistList(generics.ListAPIView):
@@ -43,3 +50,5 @@ class LocationList(generics.ListAPIView):
     queryset = Location.objects.all()
     serializer_class = LocationSerializer
     permission_classes = ()
+
+
