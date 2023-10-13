@@ -22,6 +22,7 @@ The development guide can be found in the [docs](docs) folder.
 
 ### Installation
 To install the project, follow these steps:
+
 1. Clone the repository
 ```
 git clone https://github.com/AppTonomia-Sirio/Backend.git
@@ -34,11 +35,25 @@ poetry shell
 ```
 poetry install
 ```
-4. Run the migrations
+4. Configure and start postgresql
+```
+sudo -u postgres psql
+```
+```
+CREATE DATABASE Backend;
+```
+```
+CREATE USER database WITH PASSWORD '1234';
+```
+```
+GRANT ALL PRIVILEGES ON DATABASE Backend TO database;
+```
+
+5. Run the migrations
 ```
 python manage.py migrate
 ```
-5. Create a superuser
+6. Create a superuser
 ```
 python manage.py createsuperuser
 ```
@@ -46,7 +61,7 @@ python manage.py createsuperuser
 ```
 python manage.py test
 ```
-8. Run the server
+9. Run the server
 ```
 python manage.py runserver
 ```
