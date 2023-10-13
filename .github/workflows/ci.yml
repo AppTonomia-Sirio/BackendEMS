@@ -39,17 +39,17 @@ jobs:
             #----------------------------------------------
             #       install dependencies if cache miss
             #----------------------------------------------
-    - name: Install project
+    - name: Install dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: |
-          cd app
-          poetry install
+        cd app
+        poetry install --no-interaction --no-roo
     - name: Prepare project
       run: |
         cd app
-        poetry install
-        python manage.py migrate
+        poetry install --no-interaction
     - name: Run tests
       run: |
         cd app
-        poetry install
+        python manage.py migrate
         python manage.py test
