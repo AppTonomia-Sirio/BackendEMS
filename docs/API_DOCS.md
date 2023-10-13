@@ -16,13 +16,6 @@ This document describes the API of the project.
 ## Authentication
 The API uses token authentication. To authenticate, make a POST request to the `/login/` endpoint with the user's credentials. If the credentials are valid, the server will return a JSON response with the access token and status code 200, otherwise it will return a JSON response with an error message and status code 400.
 
-If user is 'NNA' the `/login/` endpoint will also return his/her `status`. **Note:** To be argued if this is the right way to do it.
-
-Possible `status` values are:
-- `P` for `Pending`
-- `A` for `Active`
-- `F` for `Frozen`
-
 ### Example
 #### Request
 ```
@@ -36,6 +29,31 @@ POST /login/
 ```
 {
     "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+}
+```
+## Getting status of NNA user
+
+The API supports getting status of NNA user. To get the status of NNA user, make a GET request to the `/status/` endpoint.
+You must be authenticated to get the status of NNA user.
+
+### How to authenticate?
+
+Get the token from the response of `/login/` endpoint and add it to the header of the request.
+
+### Example
+
+#### Request
+```
+GET /status/
+Headers = [
+    ...
+    Authorization: Token YOUR_TOKEN
+    ...
+]
+```
+#### Response
+```
+{
     "status": "A"
 }
 ```
@@ -75,7 +93,9 @@ POST /register/
     "surname": "Doe",
     "location": 1,
     "date_of_birth": "1990-01-01",
-    "mentor": 1
+    "mentor": 1,
+    "id": 1,
+    "status": "A"
 }
 ```
 
