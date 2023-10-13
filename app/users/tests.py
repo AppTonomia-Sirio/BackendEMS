@@ -91,6 +91,27 @@ class TestUser(APITestCase):
 
         self.assertEqual(response.status_code, 400)
 
+    def test_status_api_success(self):
+        # Get status
+        request = self.factory.get('/status/', HTTP_AUTHORIZATION='Token ' + self.NNA.auth_token.key)
+        response = views.NNAStatus.as_view()(request)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_status_api_failure(self):
+        # Get status
+        request = self.factory.get('/status/')
+        response = views.NNAStatus.as_view()(request)
+
+        self.assertEqual(response.status_code, 401)
+
+    def test_status_api_forbidden(self):
+        # Get status
+        request = self.factory.get('/status/', HTTP_AUTHORIZATION='Token ' + self.therapist.auth_token.key)
+        response = views.NNAStatus.as_view()(request)
+
+        self.assertEqual(response.status_code, 403)
+
     def test_therapist_list_api(self):
         # Get therapists list
         request = self.factory.get('/therapists/')
