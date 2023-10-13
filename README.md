@@ -52,7 +52,7 @@ python manage.py runserver
 ```
 
 ### Usage
-The API documentation can be found in the [docs](docs) folder.
+See the [API Documentation](docs/API_DOCS.md).
 
 ### License
 This project is licensed under the GNU License - see the [LICENSE](LICENSE) file for details.
