@@ -26,7 +26,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install poetry
         cd app
-        poetry shell
         poetry install
     - name: Prepare project
       run: |
