@@ -32,5 +32,4 @@ jobs:
       run: |
         cd app
         poetry install
-        pip install django
-        python manage.py migrate
+        PYTHONPATH=src/ poetry run python manage.py migrate
