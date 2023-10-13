@@ -16,7 +16,8 @@ This document describes the API of the project.
 ## Authentication
 The API uses token authentication. To authenticate, make a POST request to the `/login/` endpoint with the user's credentials. If the credentials are valid, the server will return a JSON response with the access token and status code 200, otherwise it will return a JSON response with an error message and status code 400.
 
-If user is 'Student' the `/login/` endpoint will also return his/her `status`.
+If user is 'Student' the `/login/` endpoint will also return his/her `status`. **Note:** To be argued if this is the right way to do it.
+
 Possible `status` values are:
 - `P` for `Pending`
 - `A` for `Active`
