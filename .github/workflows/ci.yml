@@ -43,7 +43,7 @@ jobs:
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: |
         cd app
-        poetry install --no-interaction --no-roo
+        poetry install --no-interaction --no-root
     - name: Prepare project
       run: |
         cd app
