@@ -46,8 +46,10 @@ jobs:
     - name: Prepare project
       run: |
         cd app
+        poetry install
         python manage.py migrate
     - name: Run tests
       run: |
         cd app
+        poetry install
         python manage.py test
