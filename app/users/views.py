@@ -23,10 +23,11 @@ class LoginView(APIView):
         password = request.data.get("password")
         user = authenticate(email=email, password=password)
         if user:
-            user = Student.objects.get(email=email)
-            if user.status:
+            try:
+                user = Student.objects.get(email=email)
                 return Response({"token": user.auth_token.key, "status": user.status}, status=status.HTTP_200_OK)
-            else:
+            except:
+                user = Therapist.objects.get(email=email)
                 return Response({"token": user.auth_token.key}, status=status.HTTP_200_OK)
         else:
             return Response({"error": "Wrong Credentials"}, status=status.HTTP_400_BAD_REQUEST)
