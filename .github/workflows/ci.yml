@@ -29,7 +29,9 @@ jobs:
         poetry install
     - name: Prepare project
       run: |
+        cd app
         python manage.py migrate
     - name: Run tests
       run: |
+        cd app
         python manage.py test
