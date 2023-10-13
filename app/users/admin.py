@@ -1,10 +1,10 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import Student, Therapist, Location
+from .models import NNA, Therapist, Location
 
 
-class StudentAdmin(UserAdmin):
-    model = Student
+class NNAAdmin(UserAdmin):
+    model = NNA
     list_display = ('id', 'email', 'name', 'surname', 'location', 'date_of_birth', 'mentor', 'status')
     list_filter = ("status",)
 
@@ -41,6 +41,6 @@ class TherapistAdmin(UserAdmin):
     ordering = ('id',)
 
 
-admin.site.register(Student, StudentAdmin)
+admin.site.register(NNA, NNAAdmin)
 admin.site.register(Therapist, TherapistAdmin)
 admin.site.register(Location)
