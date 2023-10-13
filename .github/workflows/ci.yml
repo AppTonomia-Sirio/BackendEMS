@@ -39,9 +39,6 @@ jobs:
             #----------------------------------------------
             #       install dependencies if cache miss
             #----------------------------------------------
-    - name: Install dependencies
-      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction --no-root
     - name: Install project
       run: |
           source .venv/bin/activate
@@ -49,9 +46,11 @@ jobs:
           poetry install
     - name: Prepare project
       run: |
+        source .venv/bin/activate
         cd app
         python manage.py migrate
     - name: Run tests
       run: |
+        source .venv/bin/activate
         cd app
         python manage.py test
