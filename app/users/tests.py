@@ -19,29 +19,29 @@ class TestUser(APITestCase):
             surname='Therapist surname',
             email='therapist@gmail.com',
         )
-        # Create a Student
+        # Create a NNA
         hashed_password = make_password('test12345test')
-        self.student = views.Student.objects.create(
-            name='Student name',
-            surname='Student surname',
+        self.NNA = views.NNA.objects.create(
+            name='NNA name',
+            surname='NNA surname',
             location=self.location,
             mentor=self.therapist,
-            email='student@gmail.com',
+            email='NNA@gmail.com',
             password=hashed_password,
             date_of_birth='1990-01-01',
         )
         # Create a factory
         self.factory = APIRequestFactory()
 
-    def test_create_student_api_success(self):
-        # Create a student
+    def test_create_NNA_api_success(self):
+        # Create a NNA
         data = {
-            'name': 'Student name',
-            'surname': 'Student surname',
+            'name': 'NNA name',
+            'surname': 'NNA surname',
             'location': self.location.id,
             'mentor': self.therapist.id,
-            'email': 'student2@gmail.com',
-            'password': 'student12345',
+            'email': 'NNA2@gmail.com',
+            'password': 'NNA12345',
             'date_of_birth': '1990-01-01',
         }
 
@@ -50,15 +50,15 @@ class TestUser(APITestCase):
 
         self.assertEqual(response.status_code, 201)
 
-    def test_create_student_api_failure(self):
-        # Create a student
+    def test_create_NNA_api_failure(self):
+        # Create a NNA
         data = {
-            'name': 'Student name',
-            'surname': 'Student surname',
+            'name': 'NNA name',
+            'surname': 'NNA surname',
             'location': 'wrong location',
             'mentor': 'wrong mentor',
-            'email': 'student2@gmail.com',
-            'password': 'student12345',
+            'email': 'NNA2@gmail.com',
+            'password': 'NNA12345',
             'date_of_birth': '1990-01-01',
         }
 
@@ -70,7 +70,7 @@ class TestUser(APITestCase):
     def test_login_api_good_success(self):
         # Login
         data = {
-            'email': 'student@gmail.com',
+            'email': 'NNA@gmail.com',
             'password': 'test12345test',
         }
 
@@ -82,7 +82,7 @@ class TestUser(APITestCase):
     def test_login_api_bad_failure(self):
         # Login
         data = {
-            'email': 'student@gmail.com',
+            'email': 'NNA@gmail.com',
             'password': 'wrongpassword',
         }
 

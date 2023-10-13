@@ -1,16 +1,16 @@
-from .models import Student, Therapist, Location
+from .models import NNA, Therapist, Location
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 
 
-class StudentSerializer(serializers.ModelSerializer):
+class NNASerializer(serializers.ModelSerializer):
     class Meta:
-        model = Student
+        model = NNA
         fields = ('email', 'password', 'name', 'surname', 'location', 'date_of_birth', 'mentor', 'status', 'id')
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
-        user = Student(
+        user = NNA(
             email=validated_data['email'],
             name=validated_data['name'],
             surname=validated_data['surname'],

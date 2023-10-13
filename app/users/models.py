@@ -42,7 +42,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         return self.email
 
 
-class Student(CustomUser):
+class NNA(CustomUser):
     mentor = models.ForeignKey('Therapist', on_delete=models.CASCADE, blank=True, null=True)
     location = models.ForeignKey('Location', on_delete=models.CASCADE, blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)

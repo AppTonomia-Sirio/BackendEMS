@@ -2,9 +2,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework import generics
-from .serializers import StudentSerializer, LocationSerializer, TherapistSerializer
+from .serializers import NNASerializer, LocationSerializer, TherapistSerializer
 from django.contrib.auth import authenticate
-from .models import Location, Therapist, Student
+from .models import Location, Therapist, NNA
 
 # Create your views here.
 
@@ -12,7 +12,7 @@ from .models import Location, Therapist, Student
 class UserCreate(generics.CreateAPIView):
     authentication_classes = ()
     permission_classes = ()
-    serializer_class = StudentSerializer
+    serializer_class = NNASerializer
 
 
 class LoginView(APIView):
@@ -24,7 +24,7 @@ class LoginView(APIView):
         user = authenticate(email=email, password=password)
         if user:
             try:
-                user = Student.objects.get(email=email)
+                user = NNA.objects.get(email=email)
                 return Response({"token": user.auth_token.key, "status": user.status}, status=status.HTTP_200_OK)
             except:
                 user = Therapist.objects.get(email=email)

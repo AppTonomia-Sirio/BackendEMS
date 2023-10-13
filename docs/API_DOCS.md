@@ -16,7 +16,7 @@ This document describes the API of the project.
 ## Authentication
 The API uses token authentication. To authenticate, make a POST request to the `/login/` endpoint with the user's credentials. If the credentials are valid, the server will return a JSON response with the access token and status code 200, otherwise it will return a JSON response with an error message and status code 400.
 
-If user is 'Student' the `/login/` endpoint will also return his/her `status`. **Note:** To be argued if this is the right way to do it.
+If user is 'NNA' the `/login/` endpoint will also return his/her `status`. **Note:** To be argued if this is the right way to do it.
 
 Possible `status` values are:
 - `P` for `Pending`
@@ -41,7 +41,7 @@ POST /login/
 ```
 
 ## Users
-For the moment, the API only supports creating 'Student' users. To create a 'Student' user, make a POST request to the `/register/` endpoint with the user's data.
+For the moment, the API only supports creating 'NNA' users. To create a 'NNA' user, make a POST request to the `/register/` endpoint with the user's data.
 
 If the credentials are valid, the server will return a JSON response with user's data.
 #### fields:
