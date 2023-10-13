@@ -32,4 +32,12 @@ jobs:
       run: |
         cd app
         poetry install
-        PYTHONPATH=src/ poetry run python manage.py migrate
+    - name: Migrate
+      run: |
+          cd app
+          PYTHONPATH=src/ poetry run run python manage.py migrate
+        - name: Migrate
+    - name: Run tests
+      run: |
+          cd app
+          PYTHONPATH=src/ poetry run run python manage.py test
