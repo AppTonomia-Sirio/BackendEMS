@@ -41,16 +41,13 @@ jobs:
             #----------------------------------------------
     - name: Install project
       run: |
-          source .venv/bin/activate
           cd app
           poetry install
     - name: Prepare project
       run: |
-        source .venv/bin/activate
         cd app
         python manage.py migrate
     - name: Run tests
       run: |
-        source .venv/bin/activate
         cd app
         python manage.py test
