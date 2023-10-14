@@ -21,7 +21,7 @@ The API uses token authentication. To authenticate, make a POST request to the `
 ```
 POST /login/
 {
-    "username": "user",
+    "email": "email",
     "password": "password"
 }
 ```
