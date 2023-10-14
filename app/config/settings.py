@@ -88,9 +88,9 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'Backend',
-        'USER': 'database',
-        'PASSWORD': '1234',
+        'NAME': 'siriodb',
+        'USER': 'django',
+        'PASSWORD': 'django',
         'HOST': 'localhost',
         'PORT': '5432',
     }
