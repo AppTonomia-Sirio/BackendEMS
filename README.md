@@ -40,13 +40,13 @@ poetry install
 sudo -u postgres psql
 ```
 ```
-CREATE DATABASE Backend;
+CREATE DATABASE siriodb;
 ```
 ```
-CREATE USER database WITH PASSWORD '1234';
+CREATE USER django WITH PASSWORD 'django';
 ```
 ```
-GRANT ALL PRIVILEGES ON DATABASE Backend TO database;
+GRANT ALL PRIVILEGES ON DATABASE siriodb TO django;
 ```
 
 5. Run the migrations
