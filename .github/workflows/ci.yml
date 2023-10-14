@@ -8,7 +8,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
@@ -16,13 +15,13 @@ jobs:
         python-version: [3.10.9]
     services:
       postgres:
-        image: postgres:13
+        image: postgres:15
         ports:
           - 5432:5432
         env:
-          POSTGRES_DB: Backend
-          POSTGRES_USER: database
-          POSTGRES_PASSWORD: 1234
+          POSTGRES_DB: siriodb
+          POSTGRES_USER: django
+          POSTGRES_PASSWORD: django
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
@@ -52,10 +51,6 @@ jobs:
       run: |
         cd app
         poetry install --no-interaction --no-root
-    - name: Prepare project
-      run: |
-        cd app
-        poetry install --no-interaction
     - name: Run tests
       run: |
         cd app
