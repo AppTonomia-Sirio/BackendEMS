@@ -43,7 +43,7 @@ sudo -u postgres psql
 CREATE DATABASE siriodb;
 ```
 ```
-CREATE USER django WITH PASSWORD 'django';
+CREATE ROLE django WITH SUPERUSER LOGIN PASSWORD 'django';
 ```
 ```
 GRANT ALL PRIVILEGES ON DATABASE siriodb TO django;
