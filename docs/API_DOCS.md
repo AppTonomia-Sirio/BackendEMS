@@ -18,7 +18,7 @@ The API uses token authentication. To authenticate, make a POST request to the `
 
 ### Example
 #### Request
-```
+```json
 POST /login/
 {
     "email": "email",
@@ -26,7 +26,7 @@ POST /login/
 }
 ```
 #### Response
-```
+```json
 {
     "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
 }
@@ -52,7 +52,7 @@ Headers = [
 ]
 ```
 #### Response
-```
+```json
 {
     "status": "A"
 }
@@ -73,7 +73,7 @@ If the credentials are valid, the server will return a JSON response with user's
 #### All fields are required.
 ### Example
 #### Request
-```
+```json
 POST /register/
 {
     "email": "example@example.com",
@@ -86,7 +86,7 @@ POST /register/
 }
 ```
 #### Response
-```
+```json
 {
     "email": "example@example.com",
     "name": "John",
@@ -98,7 +98,27 @@ POST /register/
     "status": "A"
 }
 ```
+### Getting user data
 
+If authenticated, make a GET request to the `/user/<str:email>/` endpoint where `<str:email>` is the email of the desired user.
+### Example
+#### Request
+```
+GET /user/example@example.com/
+```
+#### Response
+```json
+{
+    "email": "example@example.com",
+    "name": "John",
+    "surname": "Doe",
+    "location": 1,
+    "date_of_birth": "1990-01-01",
+    "mentor": 2,
+    "status": "A",
+    "id": 3
+}
+```
 ## Locations
 The API supports getting list of locations. To get the list of locations, make a GET request to the `/locations/` endpoint. 
 ### Example
@@ -107,7 +127,7 @@ The API supports getting list of locations. To get the list of locations, make a
 GET /locations/
 ```
 #### Response
-```
+```json
 [
     {
         "id": 1,
@@ -127,7 +147,7 @@ The API supports getting list of therapists. To get the list of therapists, make
 GET /therapists/
 ```
 #### Response
-```
+```json
 [
     {
         "email": "example1@gmail.com",
