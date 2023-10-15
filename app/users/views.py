@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate
 from .models import Location, Therapist, NNA
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from .permissions import IsNNAUser
+from .permissions import IsNNAUser, IsTherapistUser
 
 # Create your views here.
 
@@ -78,3 +78,12 @@ class UserData(APIView):
             return Response(serialized_user.data, status=status.HTTP_200_OK)
 
         return Response({"error": "Not Found"}, status=status.HTTP_404_NOT_FOUND)
+
+class NNAofTherapist(generics.ListAPIView):
+    """Retrieve all NNA assigned to the current therapist"""
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated, IsTherapistUser]
+    serializer_class = NNASerializer
+    def get_queryset(self):
+        return NNA.objects.filter(mentor=self.request.user.id)
+    

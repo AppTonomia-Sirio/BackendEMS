@@ -98,9 +98,8 @@ POST /register/
     "status": "A"
 }
 ```
-### Getting user data
-
-If authenticated, make a GET request to the `/user/<str:email>/` endpoint where `<str:email>` is the email of the desired user.
+## Getting user data
+The API supports getting the data of an user. To get the data of an user make a GET request to the `/user/<str:email>/` endpoint where `<str:email>` is the email of the desired user.
 ### Example
 #### Request
 ```
@@ -162,6 +161,37 @@ GET /therapists/
         "id": 2
     }
     
+]
+```
+## NNAs assigned to therapist
+The API supports getting a list of all NNAs assigned to a therapist. To get the list, you must be authenticated as a therapist, make a get GET request to the `/therapist-nna/` endpoint.
+### Example
+```
+GET /therapist-nna/
+```
+#### Response
+```json
+[
+    {
+        "email": "example@example.com",
+        "name": "John",
+        "surname": "Doe",
+        "location": 1,
+        "date_of_birth": "1990-01-01",
+        "mentor": 2,
+        "status": "A",
+        "id": 3
+    },
+    {
+        "email": "example2@example.com",
+        "name": "Marie",
+        "surname": "Doe",
+        "location": 1,
+        "date_of_birth": "1990-01-01",
+        "mentor": 2,
+        "status": "A",
+        "id": 4
+    }
 ]
 ```
 ## Docs

@@ -166,3 +166,28 @@ class TestUser(APITestCase):
         response = views.UserData.as_view()(request, "NNA@gmail.com")
 
         self.assertEqual(response.status_code, 401)
+    
+    def test_NNAofTherapist_api_success(self):
+        # Get all NNA of a therapist
+        request = self.factory.get(
+            "/therapist-nna/",
+            HTTP_AUTHORIZATION="Token " + self.therapist.auth_token.key,)
+        response = views.NNAofTherapist.as_view()(request)
+
+        self.assertEqual(response.status_code, 200)
+    
+    def test_NNAofTherapist_api_forbidden(self):
+        # Get all NNA of a therapist without auth
+        request = self.factory.get("/therapist-nna/")
+        response = views.NNAofTherapist.as_view()(request)
+
+        self.assertEqual(response.status_code, 401)
+    
+    def test_NNAofTherapist_api_NNA_forbidden(self):
+        # Get all NNA of a therapist with NNA auth
+        request = self.factory.get(
+            "/therapist-nna/",
+            HTTP_AUTHORIZATION="Token " + self.NNA.auth_token.key)
+        response = views.NNAofTherapist.as_view()(request)
+
+        self.assertEqual(response.status_code, 403)

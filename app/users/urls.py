@@ -6,6 +6,7 @@ from .views import (
     TherapistList,
     NNAStatus,
     UserData,
+    NNAofTherapist
 )
 
 
@@ -16,4 +17,5 @@ urlpatterns = [
     path("therapists/", TherapistList.as_view(), name="therapist"),
     path("status/", NNAStatus.as_view(), name="status"),
     path("user/<str:email>/", UserData.as_view(), name="user_data"),
+    path("therapist-nna/", NNAofTherapist.as_view(), name="nna_of_therapist")
 ]
