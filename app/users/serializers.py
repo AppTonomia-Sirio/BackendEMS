@@ -1,6 +1,7 @@
 from .models import NNA, Therapist, Location
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+from rest_polymorphic.serializers import PolymorphicSerializer
 
 
 class NNASerializer(serializers.ModelSerializer):
@@ -39,6 +40,11 @@ class TherapistSerializer(serializers.ModelSerializer):
         fields = ('email', 'password', 'name', 'surname', 'id')
         extra_kwargs = {'password': {'write_only': True}}
 
+class UserPolymorphicSerializer(PolymorphicSerializer):
+    model_serializer_mapping = {
+        NNA: NNASerializer,
+        Therapist: TherapistSerializer
+    }
 
 class LocationSerializer(serializers.ModelSerializer):
     class Meta:

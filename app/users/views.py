@@ -2,9 +2,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework import generics
-from .serializers import NNASerializer, LocationSerializer, TherapistSerializer
+from .serializers import LocationSerializer, UserPolymorphicSerializer, NNASerializer, TherapistSerializer
 from django.contrib.auth import authenticate
-from .models import Location, Therapist, NNA
+from .models import Location, Therapist, NNA, CustomUser
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsNNAUser, IsTherapistUser
@@ -64,17 +64,11 @@ class UserData(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, email, *args, **kwargs):
-        # Checks if an NNA with a matching email exists
-        # If not it checks the Therapists
+        # Checks if a user with a matching email exists and returns it
         # If not returns a 404
-        NNA_user = NNA.objects.filter(email=email).first()
-        if NNA_user:
-            serialized_user = NNASerializer(NNA_user)
-            return Response(serialized_user.data, status=status.HTTP_200_OK)
-
-        Therapist_user = Therapist.objects.filter(email=email).first()
-        if Therapist_user:
-            serialized_user = TherapistSerializer(Therapist_user)
+        user = CustomUser.objects.filter(email=email).first()
+        if user:
+            serialized_user = UserPolymorphicSerializer(user)
             return Response(serialized_user.data, status=status.HTTP_200_OK)
 
         return Response({"error": "Not Found"}, status=status.HTTP_404_NOT_FOUND)
