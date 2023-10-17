@@ -30,17 +30,18 @@ POST /login/
 #### Response
 ```json
 {
-    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
 }
 ```
-## Getting status of NNA user
-
-The API supports getting status of NNA user. To get the status of NNA user, make a GET request to the `/status/` endpoint.
-You must be authenticated to get the status of NNA user.
 
 ### How to authenticate?
 
 Get the token from the response of `/login/` endpoint and add it to the header of the request.
+
+## Getting status of NNA user
+
+The API supports getting status of NNA user. To get the status of NNA user, make a GET request to the `/status/` endpoint.
+### **<u>You must be authenticated and also be NNA user</u>!**
 
 ### Example
 
@@ -106,10 +107,18 @@ POST /register/
 ```
 ## Getting user data
 The API supports getting the data of an user. To get the data of an user make a GET request to the `/user/<str:email>/` endpoint where `<str:email>` is the email of the desired user.
+### **<u>You must be authenticated and also be NNA user</u>!**
 ### Example
 #### Request
 ```
 GET /user/example@example.com/
+```
+```
+Headers = [
+    ...
+    Authorization: <Token YOUR_TOKEN>
+    ...
+]
 ```
 #### Response
 ```json
@@ -171,9 +180,17 @@ GET /therapists/
 ```
 ## NNAs assigned to therapist
 The API supports getting a list of all NNAs assigned to a therapist. To get the list, you must be authenticated as a therapist, make a get GET request to the `/therapist-nna/` endpoint.
+### **<u>You must be authenticated and also be NNA user</u>!**
 ### Example
 ```
 GET /therapist-nna/
+```
+```
+Headers = [
+    ...
+    Authorization: <Token YOUR_TOKEN>
+    ...
+]
 ```
 #### Response
 ```json
