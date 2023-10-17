@@ -18,8 +18,10 @@ The API uses token authentication. To authenticate, make a POST request to the `
 
 ### Example
 #### Request
-```json
+```
 POST /login/
+```
+```json
 {
     "email": "email",
     "password": "password"
@@ -45,6 +47,8 @@ Get the token from the response of `/login/` endpoint and add it to the header o
 #### Request
 ```
 GET /status/
+```
+```
 Headers = [
     ...
     Authorization: Token YOUR_TOKEN
@@ -73,8 +77,10 @@ If the credentials are valid, the server will return a JSON response with user's
 #### All fields are required.
 ### Example
 #### Request
-```json
+```
 POST /register/
+```
+```json
 {
     "email": "example@example.com",
     "password": "password",
@@ -196,6 +202,9 @@ GET /therapist-nna/
 ```
 ## Docs
 The API supports getting list of docs. To get the list of autodocs made with coreAPI, make a GET request to the `/docs/` endpoint.
+```
+GET /docs/
+```
 
 
 
