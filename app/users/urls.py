@@ -9,7 +9,7 @@ from .views import (
     NNAofTherapist
 )
 
-
+# TODO: Refactor urls structure, make it more organized
 urlpatterns = [
     path("login/", LoginView.as_view(), name="login"),
     path("register/", UserCreate.as_view(), name="register"),

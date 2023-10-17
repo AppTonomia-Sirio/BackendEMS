@@ -3,8 +3,10 @@ from polymorphic.models import PolymorphicModel, PolymorphicManager
 from django.db import models
 
 
-# Create your models here.ъ
+# Create your models here
 class CustomUserManager(BaseUserManager, PolymorphicManager):
+    # Custom user manager for CustomUser model
+
     def create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError('The Email field must be set')
@@ -27,6 +29,9 @@ class CustomUserManager(BaseUserManager, PolymorphicManager):
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin, PolymorphicModel):
+    # Custom user model
+    # PolymorphicModel is used to solve isinstance() problem in permissions.py
+
     name = models.CharField(max_length=255, blank=True, null=True)
     surname = models.CharField(max_length=255, blank=True, null=True)
     email = models.EmailField(unique=True)
@@ -44,6 +49,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, PolymorphicModel):
 
 
 class NNA(CustomUser):
+    # Custom user model for NNA
+
     mentor = models.ForeignKey('Therapist', on_delete=models.CASCADE, blank=True, null=True)
     location = models.ForeignKey('Location', on_delete=models.CASCADE, blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
@@ -56,15 +63,18 @@ class NNA(CustomUser):
 
 
 class Therapist(CustomUser):
+    # Custom user model for Therapist
+
     location = models.ForeignKey('Location', on_delete=models.CASCADE, blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
 
 
 class Location(models.Model):
+    # Location model
+
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255, blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return self.name
-

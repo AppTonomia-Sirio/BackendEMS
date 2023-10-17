@@ -8,7 +8,10 @@ from django.contrib.auth.hashers import make_password
 
 
 class TestUser(APITestCase):
+    # Test for NNA and Therapist models, views, permissions, signals
     def setUp(self):
+        # Setup before tests
+
         # Create a location
         self.location = views.Location.objects.create(
             name="Test Location",
@@ -45,9 +48,11 @@ class TestUser(APITestCase):
             "date_of_birth": "1990-01-01",
         }
 
+        # Send request
         request = self.factory.post("/register/", data)
         response = views.UserCreate.as_view()(request)
 
+        # Check if NNA is created
         self.assertEqual(response.status_code, 201)
 
     def test_create_NNA_api_failure(self):
@@ -62,9 +67,11 @@ class TestUser(APITestCase):
             "date_of_birth": "1990-01-01",
         }
 
+        # Send request with wrong data
         request = self.factory.post("/register/", data)
         response = views.UserCreate.as_view()(request)
 
+        # Check if endpoint returns failure
         self.assertEqual(response.status_code, 400)
 
     def test_login_api_good_success(self):
@@ -74,9 +81,11 @@ class TestUser(APITestCase):
             "password": "test12345test",
         }
 
+        # Send request
         request = self.factory.post("/login/", data)
         response = views.LoginView.as_view()(request)
 
+        # Check if request is successful
         self.assertEqual(response.status_code, 200)
 
     def test_login_api_bad_failure(self):
@@ -86,34 +95,39 @@ class TestUser(APITestCase):
             "password": "wrongpassword",
         }
 
+        # Send request with wrong credentials
         request = self.factory.post("/login/", data)
         response = views.LoginView.as_view()(request)
 
+        # Check if request is failure
         self.assertEqual(response.status_code, 400)
 
     def test_status_api_success(self):
-        # Get status
+        # Send request with NNA token
         request = self.factory.get(
             "/status/", HTTP_AUTHORIZATION="Token " + self.NNA.auth_token.key
         )
         response = views.NNAStatus.as_view()(request)
 
+        # Check if request is successful
         self.assertEqual(response.status_code, 200)
 
     def test_status_api_failure(self):
-        # Get status
+        # Send request without token
         request = self.factory.get("/status/")
         response = views.NNAStatus.as_view()(request)
 
+        # Check if request is failure
         self.assertEqual(response.status_code, 401)
 
     def test_status_api_forbidden(self):
-        # Get status
+        # Send request with therapist token (Therapist can't access NNA status)
         request = self.factory.get(
             "/status/", HTTP_AUTHORIZATION="Token " + self.therapist.auth_token.key
         )
         response = views.NNAStatus.as_view()(request)
 
+        # Check if request is forbidden
         self.assertEqual(response.status_code, 403)
 
     def test_therapist_list_api(self):
@@ -121,13 +135,7 @@ class TestUser(APITestCase):
         request = self.factory.get("/therapists/")
         response = views.TherapistList.as_view()(request)
 
-        self.assertEqual(response.status_code, 200)
-
-    def test_location_list_api(self):
-        # Get locations list
-        request = self.factory.get("/locations/")
-        response = views.LocationList.as_view()(request)
-
+        # Check if request is successful
         self.assertEqual(response.status_code, 200)
 
     def test_userdata_NNA_api_success(self):
@@ -138,6 +146,7 @@ class TestUser(APITestCase):
         )
         response = views.UserData.as_view()(request, "NNA@gmail.com")
 
+        # Check if request is successful
         self.assertEqual(response.status_code, 200)
 
     def test_userdata_Therapist_api_success(self):
@@ -148,6 +157,7 @@ class TestUser(APITestCase):
         )
         response = views.UserData.as_view()(request, "therapist@gmail.com")
 
+        # Check if request is successful
         self.assertEqual(response.status_code, 200)
 
     def test_userdata_api_failure(self):
@@ -158,6 +168,7 @@ class TestUser(APITestCase):
         )
         response = views.UserData.as_view()(request, "wrongaddress@gmail.com")
 
+        # Check if request is failure
         self.assertEqual(response.status_code, 404)
 
     def test_userdata_api_forbidden(self):
@@ -165,24 +176,27 @@ class TestUser(APITestCase):
         request = self.factory.get("/user/")
         response = views.UserData.as_view()(request, "NNA@gmail.com")
 
+        # Check if request is forbidden
         self.assertEqual(response.status_code, 401)
-    
+
     def test_NNAofTherapist_api_success(self):
         # Get all NNA of a therapist
         request = self.factory.get(
             "/therapist-nna/",
-            HTTP_AUTHORIZATION="Token " + self.therapist.auth_token.key,)
+            HTTP_AUTHORIZATION="Token " + self.therapist.auth_token.key, )
         response = views.NNAofTherapist.as_view()(request)
 
+        # Check if request is successful
         self.assertEqual(response.status_code, 200)
-    
-    def test_NNAofTherapist_api_forbidden(self):
+
+    def test_NNAofTherapist_api_failure(self):
         # Get all NNA of a therapist without auth
         request = self.factory.get("/therapist-nna/")
         response = views.NNAofTherapist.as_view()(request)
 
+        # Check if request is failure
         self.assertEqual(response.status_code, 401)
-    
+
     def test_NNAofTherapist_api_NNA_forbidden(self):
         # Get all NNA of a therapist with NNA auth
         request = self.factory.get(
@@ -190,4 +204,19 @@ class TestUser(APITestCase):
             HTTP_AUTHORIZATION="Token " + self.NNA.auth_token.key)
         response = views.NNAofTherapist.as_view()(request)
 
+        # Check if request is forbidden
         self.assertEqual(response.status_code, 403)
+
+
+class TestLocation(APITestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+
+    def test_location_list_api_success(self):
+        # Get locations list
+        request = self.factory.get("/locations/")
+        response = views.LocationList.as_view()(request)
+
+        # Check if request is successful
+        self.assertEqual(response.status_code, 200)
+
