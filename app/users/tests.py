@@ -138,14 +138,6 @@ class TestUser(APITestCase):
         # Check if request is successful
         self.assertEqual(response.status_code, 200)
 
-    def test_location_list_api(self):
-        # Get locations list
-        request = self.factory.get("/locations/")
-        response = views.LocationList.as_view()(request)
-
-        # Check if request is successful
-        self.assertEqual(response.status_code, 200)
-
     def test_userdata_NNA_api_success(self):
         # Get data of NNA
         request = self.factory.get(
@@ -214,4 +206,17 @@ class TestUser(APITestCase):
 
         # Check if request is forbidden
         self.assertEqual(response.status_code, 403)
+
+
+class TestLocation(APITestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+
+    def test_location_list_api_success(self):
+        # Get locations list
+        request = self.factory.get("/locations/")
+        response = views.LocationList.as_view()(request)
+
+        # Check if request is successful
+        self.assertEqual(response.status_code, 200)
 
