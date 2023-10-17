@@ -1,9 +1,10 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from polymorphic.models import PolymorphicModel, PolymorphicManager
 from django.db import models
 
 
 # Create your models here.ъ
-class CustomUserManager(BaseUserManager):
+class CustomUserManager(BaseUserManager, PolymorphicManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError('The Email field must be set')
@@ -25,7 +26,7 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 
-class CustomUser(AbstractBaseUser, PermissionsMixin):
+class CustomUser(AbstractBaseUser, PermissionsMixin, PolymorphicModel):
     name = models.CharField(max_length=255, blank=True, null=True)
     surname = models.CharField(max_length=255, blank=True, null=True)
     email = models.EmailField(unique=True)
