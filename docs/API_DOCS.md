@@ -3,12 +3,14 @@
 #
 ## Table of Contents
 #
-# - [Introduction](#introduction)
-# - [Authentication](#authentication)
-# - [Creating users](#users)
-# - [List of locations](#locations)
-# - [List of therapists](#therapists)
-# - [Docs](#docs)
+### - [Introduction](#introduction)
+### - [Authentication](#authentication)
+### - [Creating users](#users)
+### - [Getting user data](#getting-user-data)
+### - [List of locations](#locations)
+### - [List of therapists](#therapists)
+### - [NNAs assigned to therapist](#nnas-assigned-to-therapist)
+### - [Docs](#docs)
 
 ## Introduction
 This document describes the API of the project.
@@ -180,7 +182,7 @@ GET /therapists/
 ```
 ## NNAs assigned to therapist
 The API supports getting a list of all NNAs assigned to a therapist. To get the list, you must be authenticated as a therapist, make a get GET request to the `/therapist-nna/` endpoint.
-### **<u>You must be authenticated and also be NNA user</u>!**
+### **<u>You must be authenticated as a Therapist user</u>!**
 ### Example
 ```
 GET /therapist-nna/
