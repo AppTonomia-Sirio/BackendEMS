@@ -16,6 +16,6 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 
 
 # Creates 3 roles when the app is started
-Role.objects.get_or_create(name='NNA')
-Role.objects.get_or_create(name='Therapist')
-Role.objects.get_or_create(name='Admin')
+# Role.objects.get_or_create(name='NNA')
+# Role.objects.get_or_create(name='Therapist')
+# Role.objects.get_or_create(name='Admin')
