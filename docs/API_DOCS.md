@@ -1,223 +1,221 @@
 # Documentation for the API
 # =========================
-#
 ## Table of Contents
-#
+
 ### - [Introduction](#introduction)
+### - [Login/Signin](#Login-Signin)
 ### - [Authentication](#authentication)
-### - [Creating users](#users)
-### - [Getting user data](#getting-user-data)
-### - [List of locations](#locations)
-### - [List of therapists](#therapists)
-### - [NNAs assigned to therapist](#nnas-assigned-to-therapist)
+### - [Users](#users)
 ### - [Docs](#docs)
 
 ## Introduction
 This document describes the API of the project.
 
-## Authentication
-The API uses token authentication. To authenticate, make a POST request to the `/login/` endpoint with the user's credentials. If the credentials are valid, the server will return a JSON response with the access token and status code 200, otherwise it will return a JSON response with an error message and status code 400.
+## Login-Signin
+Users section of API is used for user management. It supports creating, updating, deleting and getting users. 
+#### Base URL for users is `/users/`
+### Creating a user
+To register a user, make a POST request to the `/users/register` endpoint. The request body should contain the following fields:
+- email
+- password
+- name
+- surname
+- document
+- date_of_birth (YYYY-MM-DD)
+- home (See [Homes](#homes))
+- roles (See [Roles](#roles))
 
-### Example
-#### Request
+#### request
 ```
-POST /login/
+POST /users/register
 ```
+
 ```json
 {
-    "email": "email",
+    "email": "test@test.com",
+    "password": "password",
+    "name": "Kurt",
+    "surname": "Cobain",
+    "document": "13371337L",
+    "date_of_birth": "2003-06-30",
+    "home": 5,
+    "roles": [2,4]
+}
+```
+
+#### response
+```json
+{
+    "id": 1,
+    "email": "test@test.com",
+    "name": "Kurt",
+    "surname": "Cobain",
+    "document": "13371337L",
+    "date_of_birth": "2003-06-30",
+    "home": 5,
+    "roles": [2,4]
+}
+```
+
+### Logging in
+To log in, make a POST request to the `/users/login` endpoint. The request body should contain the following fields:
+- email
+- password
+
+#### request
+```
+POST /users/login
+```
+
+```json
+{
+    "email": "test",
     "password": "password"
 }
 ```
-#### Response
+#### response
 ```json
 {
-    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+  "token": "eyJhbGciOiJIUzI1N..."
 }
 ```
-
-### How to authenticate?
-
-Get the token from the response of `/login/` endpoint and add it to the header of the request.
-
-## Getting status of NNA user
-
-The API supports getting status of NNA user. To get the status of NNA user, make a GET request to the `/status/` endpoint.
-### **<u>You must be authenticated and also be NNA user</u>!**
-
-### Example
-
-#### Request
+## Authentication
+Following endpoints related with user's data require authentication
+To authenticate, add the following header to the request:
 ```
-GET /status/
+Autorization: Token <token>
 ```
-```
-Headers = [
-    ...
-    Authorization: Token YOUR_TOKEN
-    ...
-]
-```
-#### Response
-```json
-{
-    "status": "A"
-}
-```
-
 ## Users
-For the moment, the API only supports creating 'NNA' users. To create a 'NNA' user, make a POST request to the `/register/` endpoint with the user's data.
+Users section of API is used for user management. It supports creating, updating, deleting and getting users.
 
-If the credentials are valid, the server will return a JSON response with user's data.
-#### fields:
-- `email` (string) (unique)
-- `password` (string)
-- `name` (string)
-- `surname` (string)
-- `location` (int) (pk of the location, see [Locations](#locations))
-- `date_of_birth` (date) (format: YYYY-MM-DD)
-- `mentor` (int) (pk of the mentor, see [Therapists](#therapists))
-#### All fields are required.
-### Example
-#### Request
+### Getting data of current user
+To get data of current user, make a GET request to the `/users/current` endpoint.
+#### request
 ```
-POST /register/
+GET /users/current
 ```
-```json
+#### response
+```
 {
-    "email": "example@example.com",
-    "password": "password",
-    "name": "John",
-    "surname": "Doe",
-    "location": 1,
-    "date_of_birth": "1990-01-01",
-    "mentor": 1
+  "id": 1,
+  "email": "email@test.com"
+  ...
 }
 ```
-#### Response
+### Updating a user
+To update a user, make a PUT request to the `/users/<user_id>` endpoint. The request body should contain the following fields:
+- email
+- password
+- name
+- surname
+- document
+- date_of_birth (YYYY-MM-DD)
+- home (See [Homes](#homes))
+- roles (See [Roles](#roles))
+
+```
+PUT /users/<user_id>
+```
+
+```
+{
+    ...
+}
+```
+
+### Updating a user partially
+To update a user partially, make a PATCH request to the `/users/<user_id>` endpoint. The request body should contain only the fields that are to be updated.
+```
+PATCH /users/<user_id>
+```
+
 ```json
 {
-    "email": "example@example.com",
-    "name": "John",
-    "surname": "Doe",
-    "location": 1,
-    "date_of_birth": "1990-01-01",
-    "mentor": 1,
+    "surname": "Vonegut"
+}
+```
+
+### Retrieving a user
+To retrieve a user, make a GET request to the `/users/<user_id>` endpoint.
+#### request
+```
+GET /users/<user_id>
+```
+#### response
+```
+{
+  ...
+}
+```
+### Homes 
+
+#### Retrieving a list of homes
+To retrieve a list of homes, make a GET request to the `/homes/` endpoint.
+#### request
+```
+GET /homes/
+```
+#### response
+```
+[
+  {
     "id": 1,
-    "status": "A"
-}
-```
-## Getting user data
-The API supports getting the data of an user. To get the data of an user make a GET request to the `/user/<str:email>/` endpoint where `<str:email>` is the email of the desired user.
-### **<u>You must be authenticated and also be NNA user</u>!**
-### Example
-#### Request
-```
-GET /user/example@example.com/
-```
-```
-Headers = [
-    ...
-    Authorization: <Token YOUR_TOKEN>
-    ...
+    "name": "Home 1",
+    "address": "Address 1"
+  },
+  {
+    "id": 2,
+    "name": "Home 2",
+    "address": "Address 2"
+  }
 ]
 ```
-#### Response
-```json
+#### Retrieving a home
+To retrieve a home, make a GET request to the `/homes/<home_id>` endpoint.
+#### request
+```
+GET /homes/<home_id>
+```
+#### response
+```
 {
-    "email": "example@example.com",
-    "name": "John",
-    "surname": "Doe",
-    "location": 1,
-    "date_of_birth": "1990-01-01",
-    "mentor": 2,
-    "status": "A",
-    "id": 3
+  "id": 1,
+  "name": "Home 1",
+  "address": "Address 1"
 }
 ```
-## Locations
-The API supports getting list of locations. To get the list of locations, make a GET request to the `/locations/` endpoint. 
-### Example
-#### Request
+### Roles
+#### Retrieving a list of roles
+To retrieve a list of roles, make a GET request to the `/roles/` endpoint.
+#### request
 ```
-GET /locations/
+GET /roles/
 ```
-#### Response
-```json
+#### response
+```
 [
-    {
-        "id": 1,
-        "name": "Location 1"
-    },
-    {
-        "id": 2,
-        "name": "Location 2"
-    }
+  {
+    "id": 1,
+    "name": "Role 1"
+  },
+  {
+    "id": 2,
+    "name": "Role 2"
+  }
 ]
 ```
-## Therapists
-The API supports getting list of therapists. To get the list of therapists, make a GET request to the `/therapists/` endpoint.
-### Example
-#### Request
+#### Retrieving a role
+To retrieve a role, make a GET request to the `/roles/<role_id>` endpoint.
+#### request
 ```
-GET /therapists/
+GET /roles/<role_id>
 ```
-#### Response
-```json
-[
-    {
-        "email": "example1@gmail.com",
-        "name": "John",
-        "surname": "Doe",
-        "id": 1
-    },
-    {
-        "email": "example2@gmail.com",
-        "name": "Marry",
-        "surname": "Smith",
-        "id": 2
-    }
-    
-]
+#### response
 ```
-## NNAs assigned to therapist
-The API supports getting a list of all NNAs assigned to a therapist. To get the list, you must be authenticated as a therapist, make a get GET request to the `/therapist-nna/` endpoint.
-### **<u>You must be authenticated as a Therapist user</u>!**
-### Example
-```
-GET /therapist-nna/
-```
-```
-Headers = [
-    ...
-    Authorization: <Token YOUR_TOKEN>
-    ...
-]
-```
-#### Response
-```json
-[
-    {
-        "email": "example@example.com",
-        "name": "John",
-        "surname": "Doe",
-        "location": 1,
-        "date_of_birth": "1990-01-01",
-        "mentor": 2,
-        "status": "A",
-        "id": 3
-    },
-    {
-        "email": "example2@example.com",
-        "name": "Marie",
-        "surname": "Doe",
-        "location": 1,
-        "date_of_birth": "1990-01-01",
-        "mentor": 2,
-        "status": "A",
-        "id": 4
-    }
-]
+{
+  "id": 1,
+  "name": "Role 1"
+}
 ```
 ## Docs
 The API supports getting list of docs. To get the list of autodocs made with coreAPI, make a GET request to the `/docs/` endpoint.
