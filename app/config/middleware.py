@@ -20,5 +20,5 @@ class InternalServerError:
     def __call__(self, request):
         response = self.get_response(request)
         if response.status_code == 500:
-            return JsonResponse({'error': 'Internal Server Error'}, status=50)
+            return JsonResponse({'error': 'Internal Server Error'}, status=500)
         return response

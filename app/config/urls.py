@@ -20,6 +20,6 @@ from rest_framework.documentation import include_docs_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls), # Django admin
-    re_path(r'^', include('users.urls')), # Users functionality
+    re_path(r'users/', include('users.urls')), # Users functionality
     path('docs/', include_docs_urls(title='SirioAPI', public=True)), # API auto documentation
 ]
