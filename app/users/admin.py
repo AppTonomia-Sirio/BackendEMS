@@ -1,50 +1,38 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import NNA, Therapist, Location
+from .models import Home, CustomUser
 
 
-class NNAAdmin(UserAdmin):
+class CustomUserAdmin(UserAdmin):
     # Custom admin for NNA model
-    model = NNA
-    list_display = ('id', 'email', 'name', 'surname', 'location', 'date_of_birth', 'mentor', 'status')
-    list_filter = ("status",)
+    model = CustomUser
+    list_display = ('id', 'email', 'name', 'surname', 'document', 'date_of_birth', 'home', 'is_active')
+    list_filter = ('is_active', 'home', 'roles')
 
     # Fieldsets for admin page
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
-        ('Personal Info', {'fields': ('name', 'surname', 'location', 'date_of_birth', 'mentor', 'status')}),
+        (None, {'fields': ('email', 'password',)}),
+        ('Personal Info', {'fields': ('name', 'surname', 'document', 'date_of_birth', 'home', 'roles',)}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2', 'name', 'surname', 'location', 'date_of_birth', 'mentor', 'status'),
+            'fields': ('email', 'password1', 'password2', 'name', 'surname',
+                       'document', 'date_of_birth', 'home', 'roles'),
         }),
     )
-    search_fields = ('id', 'email', 'name', 'surname')
+    search_fields = ('id', 'email', 'name', 'surname', 'document', 'date_of_birth', 'home')
     ordering = ('id',)
 
 
-class TherapistAdmin(UserAdmin):
-    # Custom admin for Therapist model
-    model = Therapist
-    list_display = ('id', 'email', 'name', 'surname')
-    list_filter = ()
-
-    # Fieldsets for admin page
-    fieldsets = (
-        (None, {'fields': ('email', 'password')}),
-        ('Personal Info', {'fields': ('name', 'surname')}),
-    )
-    add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2', 'name', 'surname'),
-        }),
-    )
-    search_fields = ('id', 'email', 'name', 'surname')
+class HomeAdmin(admin.ModelAdmin):
+    # Custom admin for Location model
+    model = Home
+    list_display = ('id', 'name', 'address')
+    search_fields = ('id', 'name', 'address')
     ordering = ('id',)
 
 
-admin.site.register(NNA, NNAAdmin)
-admin.site.register(Therapist, TherapistAdmin)
-admin.site.register(Location)
+admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.register(Home, HomeAdmin)
+admin.site.site_header = 'Sirio App Administration'

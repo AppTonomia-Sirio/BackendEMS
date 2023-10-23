@@ -50,7 +50,6 @@ INSTALLED_APPS = [
     # Third party
     'rest_framework',
     'rest_framework.authtoken',
-    'polymorphic',
 ]
 
 MIDDLEWARE = [
@@ -63,6 +62,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # Local
     'config.middleware.NotFoundMiddleware',
+    'config.middleware.InternalServerError',
 ]
 
 ROOT_URLCONF = 'config.urls'
