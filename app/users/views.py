@@ -7,6 +7,7 @@ from django.contrib.auth import authenticate
 from .models import CustomUser, Home, Role
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from .permissions import IsSuperUserToDelete
 
 
 # Create your views here.
@@ -67,8 +68,8 @@ class RoleListView(generics.ListAPIView):
 
 class CurrentUserView(APIView):
     """Retrieves the data of the current user"""
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         serializer = UserSerializer(request.user)
@@ -80,12 +81,17 @@ class UserListView(generics.ListAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
 
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
 
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     """Retrieves, updates or deletes a user"""
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     lookup_field = 'id'
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated, IsSuperUserToDelete]
 
 
 # Home data and role data
