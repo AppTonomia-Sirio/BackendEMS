@@ -1,95 +1,110 @@
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, serializers
 from rest_framework.views import APIView
 from rest_framework import generics
-from .serializers import LocationSerializer, UserPolymorphicSerializer, NNASerializer, TherapistSerializer
+from .serializers import UserSerializer, HomeSerializer, RoleSerializer
 from django.contrib.auth import authenticate
-from .models import Location, Therapist, NNA, CustomUser
+from .models import CustomUser, Home, Role
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from .permissions import IsNNAUser, IsTherapistUser
+from .permissions import IsSuperUserToDelete
 
 
 # Create your views here.
 
-
-class UserCreate(generics.CreateAPIView):
-    """Create a new user, at the moment only NNA users can be created"""
-    authentication_classes = ()
-    permission_classes = ()
-    serializer_class = NNASerializer
-
+# LOGIN / REGISTER Views
 
 class LoginView(APIView):
     """Retrieves a token for a user with the given credentials"""
     permission_classes = ()
 
-    def post(
-            self,
-            request,
-    ):
-        email = request.data.get("email")
-        password = request.data.get("password")
-        # Check if credentials are correct
-        user = authenticate(email=email, password=password)
-        if user:
-            # If they are, return token
-            return Response({"token": user.auth_token.key}, status=status.HTTP_200_OK)
+    class InputSerializer(serializers.Serializer):
+        email = serializers.EmailField()
+        password = serializers.CharField()
+
+    def post(self, request):
+        serializer = self.InputSerializer(data=request.data)
+        if serializer.is_valid():
+            email = serializer.validated_data["email"]
+            password = serializer.validated_data["password"]
+            user = authenticate(email=email, password=password)
+            if user:
+                return Response({"token": user.auth_token.key}, status=status.HTTP_200_OK)
+            else:
+                return Response({"error": "Wrong Credentials"}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            # If not, return error
-            return Response(
-                {"error": "Wrong Credentials"}, status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class NNAStatus(APIView):
-    """Retrieve the status of the current NNA user. User must be authenticated and be an NNA user"""
+class UserCreate(generics.CreateAPIView):
+    """Creates a new user"""
+    authentication_classes = ()
+    permission_classes = ()
 
+    def get_serializer_class(self):
+        # Returns a different serializer without 'is_active' field for the creation of a new user
+        class CustomUserCreateSerializer(UserSerializer):
+            class Meta:
+                model = CustomUser
+                fields = ('id', 'email', 'name', 'surname', 'document', 'date_of_birth', 'home', 'roles')
+
+        return CustomUserCreateSerializer
+
+
+# Lists
+class HomeListView(generics.ListAPIView):
+    """Lists all homes"""
+    queryset = Home.objects.all()
+    serializer_class = HomeSerializer
+
+
+class RoleListView(generics.ListAPIView):
+    """Lists all roles"""
+    queryset = Role.objects.all()
+    serializer_class = RoleSerializer
+
+
+# Users data
+
+class CurrentUserView(APIView):
+    """Retrieves the data of the current user"""
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated, IsNNAUser]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # TODO Find a way to avoid looking up all the users and get user directly from request
-        user = NNA.objects.get(email=request.user.email)
-        return Response({"status": user.status}, status=status.HTTP_200_OK)
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
 
 
-class TherapistList(generics.ListAPIView):
-    """Retrieve a list of all therapists"""
-    queryset = Therapist.objects.all()
-    serializer_class = TherapistSerializer
-    permission_classes = ()
-
-
-class LocationList(generics.ListAPIView):
-    """Retrieve a list of all locations"""
-    queryset = Location.objects.all()
-    serializer_class = LocationSerializer
-    permission_classes = ()
-
-
-class UserData(APIView):
-    """Retrieve user details based on the provided email. User must be authenticated"""
+class UserListView(generics.ListAPIView):
+    """Lists all users"""
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
 
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, email, *args, **kwargs):
-        # Checks if a user with a matching email exists and returns it
-        # If not returns a 404
-        user = CustomUser.objects.filter(email=email).first()
-        if user:
-            serialized_user = UserPolymorphicSerializer(user)
-            return Response(serialized_user.data, status=status.HTTP_200_OK)
 
-        return Response({"error": "Not Found"}, status=status.HTTP_404_NOT_FOUND)
-
-
-class NNAofTherapist(generics.ListAPIView):
-    """Retrieve all NNA assigned to the current therapist"""
+class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """Retrieves, updates or deletes a user"""
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+    lookup_field = 'id'
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated, IsTherapistUser]
-    serializer_class = NNASerializer
+    permission_classes = [IsAuthenticated, IsSuperUserToDelete]
 
-    def get_queryset(self):
-        return NNA.objects.filter(mentor=self.request.user.id)
+
+# Home data and role data
+
+class HomeView(generics.RetrieveAPIView):
+    """Retrieves, updates or deletes a home"""
+    queryset = Home.objects.all()
+    serializer_class = HomeSerializer
+    lookup_field = 'id'
+
+
+class RoleView(generics.RetrieveAPIView):
+    """Retrieves, updates or deletes a role"""
+    queryset = Role.objects.all()
+    serializer_class = RoleSerializer
+    lookup_field = 'id'

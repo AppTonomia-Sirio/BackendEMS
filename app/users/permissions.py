@@ -1,14 +1,13 @@
 from rest_framework import permissions
-from .models import NNA, Therapist
 
 
-class IsNNAUser(permissions.BasePermission):
+class IsSuperUserToDelete(permissions.BasePermission):
     def has_permission(self, request, view):
-        # Check if user is NNA
-        return isinstance(request.user.get_real_instance(), NNA)
-
-
-class IsTherapistUser(permissions.BasePermission):
-    def has_permission(self, request, view):
-        # Check if user is Therapist
-        return isinstance(request.user.get_real_instance(), Therapist)
+        # Read only(GET, HEAD, OPTIONS) for all users
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        # Write only(POST, PATCH) for all users
+        if request.method in ('POST', 'PATCH'):
+            return True
+        # Delete only for superusers
+        return request.user and request.user.is_superuser

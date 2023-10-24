@@ -2,221 +2,199 @@ from rest_framework.test import APITestCase
 from rest_framework.test import APIRequestFactory
 from . import views
 from django.contrib.auth.hashers import make_password
+from .models import CustomUser, Home, Role
+from rest_framework.authtoken.models import Token
 
 
-# Create your tests here.
-
-
-class TestUser(APITestCase):
-    # Test for NNA and Therapist models, views, permissions, signals
+class UserTests(APITestCase):
     def setUp(self):
-        # Setup before tests
-
-        # Create a location
-        self.location = views.Location.objects.create(
-            name="Test Location",
-        )
-        # Create a Therapist
-        self.therapist = views.Therapist.objects.create(
-            name="Therapist name",
-            surname="Therapist surname",
-            email="therapist@gmail.com",
-        )
-        # Create a NNA
-        hashed_password = make_password("test12345test")
-        self.NNA = views.NNA.objects.create(
-            name="NNA name",
-            surname="NNA surname",
-            location=self.location,
-            mentor=self.therapist,
-            email="NNA@gmail.com",
-            password=hashed_password,
-            date_of_birth="1990-01-01",
-        )
-        # Create a factory
         self.factory = APIRequestFactory()
+        self.view = views.UserListView.as_view()
+        self.uri = '/users/'
+        self.role_nna = Role.objects.create(name='NNA')
+        self.role_therapist = Role.objects.create(name='Therapist')
+        self.role_admin = Role.objects.create(name='Admin')
+        self.home = Home.objects.create(name='Home1', address='Address1')
 
-    def test_create_NNA_api_success(self):
-        # Create a NNA
+        self.user = CustomUser.objects.create(
+            name='Test',
+            surname='Test',
+            email='email@test.com',
+            password=make_password('test'),
+            document='123456789',
+            date_of_birth='1990-01-01',
+            home=self.home,
+        )
+        self.user.roles.add(self.role_nna)
+
+        self.token = Token.objects.get(user=self.user)
+
+    def test_login_success(self):
         data = {
-            "name": "NNA name",
-            "surname": "NNA surname",
-            "location": self.location.id,
-            "mentor": self.therapist.id,
-            "email": "NNA2@gmail.com",
-            "password": "NNA12345",
-            "date_of_birth": "1990-01-01",
+            'email': 'email@test.com',
+            'password': 'test'
         }
 
-        # Send request
-        request = self.factory.post("/register/", data)
-        response = views.UserCreate.as_view()(request)
+        token = Token.objects.get(user=self.user)
+        request = self.factory.post(self.uri, data)
+        response = views.LoginView.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['token'], token.key)
 
-        # Check if NNA is created
+    def test_login_failure(self):
+        data = {}
+        request = self.factory.post(self.uri, data)
+        response = views.LoginView.as_view()(request)
+        self.assertEqual(response.status_code, 400)
+
+    def test_login_failure_wrong_credentials(self):
+        data = {
+            'email': 'worng@wrong.com',
+            'password': 'wrong'
+        }
+        request = self.factory.post(self.uri, data)
+        response = views.LoginView.as_view()(request)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['error'], 'Wrong Credentials')
+
+    def test_register(self):
+        data = {
+            'name': 'Test2',
+            'surname': 'Test2',
+            'email': 'email2@test.com',
+            'password': 'test2',
+            'document': '123456789',
+            'date_of_birth': '1990-01-01',
+            'home': self.home.id,
+            'roles': [self.role_nna.id],
+        }
+        request = self.factory.post(self.uri, data)
+        response = views.UserCreate.as_view()(request)
         self.assertEqual(response.status_code, 201)
 
-    def test_create_NNA_api_failure(self):
-        # Create a NNA
+    def test_register_failure(self):
         data = {
-            "name": "NNA name",
-            "surname": "NNA surname",
-            "location": "wrong location",
-            "mentor": "wrong mentor",
-            "email": "NNA2@gmail.com",
-            "password": "NNA12345",
-            "date_of_birth": "1990-01-01",
+            'name': 'Test2',
+            'surname': 'Test2',
+            'email': 'email2@test.com',
+            'password': 'test2',
+            'document': '123456789',
+            'date_of_birth': '1990-01-01',
+            'home': self.home.id,
+            'roles': [self.role_nna.id],
         }
 
-        # Send request with wrong data
-        request = self.factory.post("/register/", data)
+        request = self.factory.post(self.uri, data)
+        views.UserCreate.as_view()(request)
         response = views.UserCreate.as_view()(request)
-
-        # Check if endpoint returns failure
         self.assertEqual(response.status_code, 400)
 
-    def test_login_api_good_success(self):
-        # Login
-        data = {
-            "email": "NNA@gmail.com",
-            "password": "test12345test",
-        }
-
-        # Send request
-        request = self.factory.post("/login/", data)
-        response = views.LoginView.as_view()(request)
-
-        # Check if request is successful
+    def test_get_current_user(self):
+        request = self.factory.get(self.uri)
+        request.META['HTTP_AUTHORIZATION'] = 'Token ' + self.token.key
+        response = views.CurrentUserView.as_view()(request)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['email'], self.user.email)
 
-    def test_login_api_bad_failure(self):
-        # Login
-        data = {
-            "email": "NNA@gmail.com",
-            "password": "wrongpassword",
-        }
-
-        # Send request with wrong credentials
-        request = self.factory.post("/login/", data)
-        response = views.LoginView.as_view()(request)
-
-        # Check if request is failure
-        self.assertEqual(response.status_code, 400)
-
-    def test_status_api_success(self):
-        # Send request with NNA token
-        request = self.factory.get(
-            "/status/", HTTP_AUTHORIZATION="Token " + self.NNA.auth_token.key
-        )
-        response = views.NNAStatus.as_view()(request)
-
-        # Check if request is successful
-        self.assertEqual(response.status_code, 200)
-
-    def test_status_api_failure(self):
-        # Send request without token
-        request = self.factory.get("/status/")
-        response = views.NNAStatus.as_view()(request)
-
-        # Check if request is failure
+    def test_get_current_user_failure(self):
+        request = self.factory.get(self.uri)
+        response = views.CurrentUserView.as_view()(request)
         self.assertEqual(response.status_code, 401)
 
-    def test_status_api_forbidden(self):
-        # Send request with therapist token (Therapist can't access NNA status)
-        request = self.factory.get(
-            "/status/", HTTP_AUTHORIZATION="Token " + self.therapist.auth_token.key
-        )
-        response = views.NNAStatus.as_view()(request)
+    def test_get_user_list(self):
+        request = self.factory.get(self.uri)
+        request.META['HTTP_AUTHORIZATION'] = 'Token ' + self.token.key
+        response = views.UserListView.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data[0]['email'], self.user.email)
 
-        # Check if request is forbidden
+    def test_get_user_list_failure(self):
+        request = self.factory.get(self.uri)
+        response = views.UserListView.as_view()(request)
+        self.assertEqual(response.status_code, 401)
+
+    def test_get_user_detail(self):
+        request = self.factory.get(self.uri)
+        request.META['HTTP_AUTHORIZATION'] = 'Token ' + self.token.key
+        response = views.UserDetailView.as_view()(request, id=self.user.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['email'], self.user.email)
+
+    def test_get_user_detail_failure(self):
+        request = self.factory.get(self.uri)
+        response = views.UserDetailView.as_view()(request, id=self.user.id)
+        self.assertEqual(response.status_code, 401)
+
+    def test_partially_update_user(self):
+        data = {
+            'name': 'Test2'
+        }
+        request = self.factory.patch(self.uri, data)
+        request.META['HTTP_AUTHORIZATION'] = 'Token ' + self.token.key
+        response = views.UserDetailView.as_view()(request, id=self.user.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['name'], 'Test2')
+
+    def test_partially_update_user_failure(self):
+        data = {
+            'name': 'Test2'
+        }
+        request = self.factory.patch(self.uri, data)
+        response = views.UserDetailView.as_view()(request, id=self.user.id)
+        self.assertEqual(response.status_code, 401)
+
+    def test_delete_user_forbidden(self):
+        request = self.factory.delete(self.uri)
+        request.META['HTTP_AUTHORIZATION'] = 'Token ' + self.token.key
+        response = views.UserDetailView.as_view()(request, id=self.user.id)
         self.assertEqual(response.status_code, 403)
 
-    def test_therapist_list_api(self):
-        # Get therapists list
-        request = self.factory.get("/therapists/")
-        response = views.TherapistList.as_view()(request)
-
-        # Check if request is successful
+    def test_homes_list(self):
+        request = self.factory.get(self.uri)
+        request.META['HTTP_AUTHORIZATION'] = 'Token ' + self.token.key
+        response = views.HomeListView.as_view()(request)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data[0]['name'], self.home.name)
 
-    def test_userdata_NNA_api_success(self):
-        # Get data of NNA
-        request = self.factory.get(
-            "/user/",
-            HTTP_AUTHORIZATION="Token " + self.therapist.auth_token.key,
-        )
-        response = views.UserData.as_view()(request, "NNA@gmail.com")
-
-        # Check if request is successful
-        self.assertEqual(response.status_code, 200)
-
-    def test_userdata_Therapist_api_success(self):
-        # Get data of therapist
-        request = self.factory.get(
-            "/user/",
-            HTTP_AUTHORIZATION="Token " + self.therapist.auth_token.key,
-        )
-        response = views.UserData.as_view()(request, "therapist@gmail.com")
-
-        # Check if request is successful
-        self.assertEqual(response.status_code, 200)
-
-    def test_userdata_api_failure(self):
-        # Get data of non existing user
-        request = self.factory.get(
-            "/user/",
-            HTTP_AUTHORIZATION="Token " + self.therapist.auth_token.key,
-        )
-        response = views.UserData.as_view()(request, "wrongaddress@gmail.com")
-
-        # Check if request is failure
-        self.assertEqual(response.status_code, 404)
-
-    def test_userdata_api_forbidden(self):
-        # Get data of non existing user
-        request = self.factory.get("/user/")
-        response = views.UserData.as_view()(request, "NNA@gmail.com")
-
-        # Check if request is forbidden
+    def test_homes_list_failure(self):
+        request = self.factory.get(self.uri)
+        response = views.HomeListView.as_view()(request)
         self.assertEqual(response.status_code, 401)
 
-    def test_NNAofTherapist_api_success(self):
-        # Get all NNA of a therapist
-        request = self.factory.get(
-            "/therapist-nna/",
-            HTTP_AUTHORIZATION="Token " + self.therapist.auth_token.key, )
-        response = views.NNAofTherapist.as_view()(request)
-
-        # Check if request is successful
+    def test_roles_list(self):
+        request = self.factory.get(self.uri)
+        request.META['HTTP_AUTHORIZATION'] = 'Token ' + self.token.key
+        response = views.RoleListView.as_view()(request)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data[0]['name'], self.role_nna.name)
 
-    def test_NNAofTherapist_api_failure(self):
-        # Get all NNA of a therapist without auth
-        request = self.factory.get("/therapist-nna/")
-        response = views.NNAofTherapist.as_view()(request)
-
-        # Check if request is failure
+    def test_roles_list_failure(self):
+        request = self.factory.get(self.uri)
+        response = views.RoleListView.as_view()(request)
         self.assertEqual(response.status_code, 401)
 
-    def test_NNAofTherapist_api_NNA_forbidden(self):
-        # Get all NNA of a therapist with NNA auth
-        request = self.factory.get(
-            "/therapist-nna/",
-            HTTP_AUTHORIZATION="Token " + self.NNA.auth_token.key)
-        response = views.NNAofTherapist.as_view()(request)
-
-        # Check if request is forbidden
-        self.assertEqual(response.status_code, 403)
-
-
-class TestLocation(APITestCase):
-    def setUp(self):
-        self.factory = APIRequestFactory()
-
-    def test_location_list_api_success(self):
-        # Get locations list
-        request = self.factory.get("/locations/")
-        response = views.LocationList.as_view()(request)
-
-        # Check if request is successful
+    def test_get_home(self):
+        request = self.factory.get(self.uri)
+        request.META['HTTP_AUTHORIZATION'] = 'Token ' + self.token.key
+        response = views.HomeView.as_view()(request, id=self.home.id)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['name'], self.home.name)
+
+    def test_get_home_failure(self):
+        request = self.factory.get(self.uri)
+        response = views.HomeView.as_view()(request, id=self.home.id)
+        self.assertEqual(response.status_code, 401)
+
+    def test_get_role(self):
+        request = self.factory.get(self.uri)
+        request.META['HTTP_AUTHORIZATION'] = 'Token ' + self.token.key
+        response = views.RoleView.as_view()(request, id=self.role_nna.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['name'], self.role_nna.name)
+
+    def test_get_role_failure(self):
+        request = self.factory.get(self.uri)
+        response = views.RoleView.as_view()(request, id=self.role_nna.id)
+        self.assertEqual(response.status_code, 401)
+
 
