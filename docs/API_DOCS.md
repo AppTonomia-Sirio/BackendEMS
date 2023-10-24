@@ -89,6 +89,7 @@ Autorization: Token <token>
 Users section of API is used for user management. It supports creating, updating, deleting and getting users.
 
 ### Getting data of current user
+**You must be authenticated to use this endpoint**
 To get data of current user, make a GET request to the `/users/current` endpoint.
 #### request
 ```
@@ -103,6 +104,7 @@ GET /users/current
 }
 ```
 ### Updating a user
+**You must be authenticated to use this endpoint**
 To update a user, make a PUT request to the `/users/<user_id>` endpoint. The request body should contain the following fields:
 - email
 - password
@@ -124,6 +126,7 @@ PUT /users/<user_id>
 ```
 
 ### Updating a user partially
+**You must be authenticated to use this endpoint**
 To update a user partially, make a PATCH request to the `/users/<user_id>` endpoint. The request body should contain only the fields that are to be updated.
 ```
 PATCH /users/<user_id>
@@ -136,6 +139,7 @@ PATCH /users/<user_id>
 ```
 
 ### Retrieving a user
+**You must be authenticated to use this endpoint**
 To retrieve a user, make a GET request to the `/users/<user_id>` endpoint.
 #### request
 ```
@@ -150,10 +154,10 @@ GET /users/<user_id>
 ### Homes 
 
 #### Retrieving a list of homes
-To retrieve a list of homes, make a GET request to the `/homes/` endpoint.
+To retrieve a list of homes, make a GET request to the `users/homes/` endpoint.
 #### request
 ```
-GET /homes/
+GET users/homes/
 ```
 #### response
 ```
@@ -171,10 +175,10 @@ GET /homes/
 ]
 ```
 #### Retrieving a home
-To retrieve a home, make a GET request to the `/homes/<home_id>` endpoint.
+To retrieve a home, make a GET request to the `users/homes/<home_id>` endpoint.
 #### request
 ```
-GET /homes/<home_id>
+GET users/homes/<home_id>
 ```
 #### response
 ```
@@ -186,10 +190,10 @@ GET /homes/<home_id>
 ```
 ### Roles
 #### Retrieving a list of roles
-To retrieve a list of roles, make a GET request to the `/roles/` endpoint.
+To retrieve a list of roles, make a GET request to the `users/roles/` endpoint.
 #### request
 ```
-GET /roles/
+GET users/roles/
 ```
 #### response
 ```
@@ -205,10 +209,10 @@ GET /roles/
 ]
 ```
 #### Retrieving a role
-To retrieve a role, make a GET request to the `/roles/<role_id>` endpoint.
+To retrieve a role, make a GET request to the `users/roles/<role_id>` endpoint.
 #### request
 ```
-GET /roles/<role_id>
+GET users/roles/<role_id>
 ```
 #### response
 ```
