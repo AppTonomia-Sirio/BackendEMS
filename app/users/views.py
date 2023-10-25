@@ -54,12 +54,16 @@ class UserCreate(generics.CreateAPIView):
 # Lists
 class HomeListView(generics.ListAPIView):
     """Lists all homes"""
+    permission_classes = ()
+    authentication_classes = ()
     queryset = Home.objects.all()
     serializer_class = HomeSerializer
 
 
 class RoleListView(generics.ListAPIView):
     """Lists all roles"""
+    permission_classes = ()
+    authentication_classes = ()
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
 
@@ -98,6 +102,8 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class HomeView(generics.RetrieveAPIView):
     """Retrieves, updates or deletes a home"""
+    permission_classes = ()
+    authentication_classes = ()
     queryset = Home.objects.all()
     serializer_class = HomeSerializer
     lookup_field = 'id'
@@ -105,6 +111,8 @@ class HomeView(generics.RetrieveAPIView):
 
 class RoleView(generics.RetrieveAPIView):
     """Retrieves, updates or deletes a role"""
+    permission_classes = ()
+    authentication_classes = ()
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
     lookup_field = 'id'
