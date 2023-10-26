@@ -6,7 +6,23 @@ class UserSerializer(serializers.ModelSerializer):
     # Serializer for User model
     class Meta:
         model = CustomUser
-        fields = ('id', 'email', 'name', 'surname', 'document', 'date_of_birth', 'home', 'roles', 'is_active')
+        fields = ('id', 'email', 'name', 'surname', 'password', 'document', 'date_of_birth', 'home', 'roles', 'is_active')
+        extra_kwargs = {'password': {'write_only': True}, 'is_active': {'read_only': True}}
+
+    def create(self, validated_data):
+        user = CustomUser(
+            email=validated_data['email'],
+            name=validated_data['name'],
+            surname=validated_data['surname'],
+            document=validated_data['document'],
+            date_of_birth=validated_data['date_of_birth'],
+            home=validated_data['home'],
+        )
+        user.set_password(validated_data['password'])
+        user.save()
+        user.roles.set(validated_data['roles'])
+        user.save()
+        return user
 
 
 class HomeSerializer(serializers.ModelSerializer):

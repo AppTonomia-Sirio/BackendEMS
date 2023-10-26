@@ -40,15 +40,7 @@ class UserCreate(generics.CreateAPIView):
     """Creates a new user"""
     authentication_classes = ()
     permission_classes = ()
-
-    def get_serializer_class(self):
-        # Returns a different serializer without 'is_active' field for the creation of a new user
-        class CustomUserCreateSerializer(UserSerializer):
-            class Meta:
-                model = CustomUser
-                fields = ('id', 'email', 'name', 'surname', 'document', 'date_of_birth', 'home', 'roles')
-
-        return CustomUserCreateSerializer
+    serializer_class = UserSerializer
 
 
 # Lists
