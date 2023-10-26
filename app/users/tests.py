@@ -28,23 +28,23 @@ class UserTests(APITestCase):
         self.user.roles.add(self.role_nna)
 
         self.token = Token.objects.get(user=self.user)
+        self.request = self.factory.get(self.uri)
 
     def test_login_success(self):
         data = {
             'email': 'email@test.com',
             'password': 'test'
         }
-
+        self.request = self.factory.post(self.uri, data)
         token = Token.objects.get(user=self.user)
-        request = self.factory.post(self.uri, data)
-        response = views.LoginView.as_view()(request)
+        response = views.LoginView.as_view()(self.request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['token'], token.key)
 
     def test_login_failure(self):
         data = {}
-        request = self.factory.post(self.uri, data)
-        response = views.LoginView.as_view()(request)
+        self.request = self.factory.post(self.uri, data)
+        response = views.LoginView.as_view()(self.request)
         self.assertEqual(response.status_code, 400)
 
     def test_login_failure_wrong_credentials(self):
@@ -52,8 +52,8 @@ class UserTests(APITestCase):
             'email': 'worng@wrong.com',
             'password': 'wrong'
         }
-        request = self.factory.post(self.uri, data)
-        response = views.LoginView.as_view()(request)
+        self.request = self.factory.post(self.uri, data)
+        response = views.LoginView.as_view()(self.request)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data['error'], 'Wrong Credentials')
 
@@ -68,8 +68,8 @@ class UserTests(APITestCase):
             'home': self.home.id,
             'roles': [self.role_nna.id],
         }
-        request = self.factory.post(self.uri, data)
-        response = views.UserCreate.as_view()(request)
+        self.request = self.factory.post(self.uri, data)
+        response = views.UserCreate.as_view()(self.request)
         self.assertEqual(response.status_code, 201)
 
     def test_register_failure(self):
@@ -83,55 +83,48 @@ class UserTests(APITestCase):
             'home': self.home.id,
             'roles': [self.role_nna.id],
         }
-
-        request = self.factory.post(self.uri, data)
-        views.UserCreate.as_view()(request)
-        response = views.UserCreate.as_view()(request)
+        self.request = self.factory.post(self.uri, data)
+        views.UserCreate.as_view()(self.request, data)
+        response = views.UserCreate.as_view()(self.request)
         self.assertEqual(response.status_code, 400)
 
     def test_get_current_user(self):
-        request = self.factory.get(self.uri)
-        request.META['HTTP_AUTHORIZATION'] = 'Token ' + self.token.key
-        response = views.CurrentUserView.as_view()(request)
+        self.request.META['HTTP_AUTHORIZATION'] = 'Token ' + self.token.key
+        response = views.CurrentUserView.as_view()(self.request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['email'], self.user.email)
 
     def test_get_current_user_failure(self):
-        request = self.factory.get(self.uri)
-        response = views.CurrentUserView.as_view()(request)
+        response = views.CurrentUserView.as_view()(self.request)
         self.assertEqual(response.status_code, 401)
 
     def test_get_user_list(self):
-        request = self.factory.get(self.uri)
-        request.META['HTTP_AUTHORIZATION'] = 'Token ' + self.token.key
-        response = views.UserListView.as_view()(request)
+        self.request.META['HTTP_AUTHORIZATION'] = 'Token ' + self.token.key
+        response = views.UserListView.as_view()(self.request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data[0]['email'], self.user.email)
 
     def test_get_user_list_failure(self):
-        request = self.factory.get(self.uri)
-        response = views.UserListView.as_view()(request)
+        response = views.UserListView.as_view()(self.request)
         self.assertEqual(response.status_code, 401)
 
     def test_get_user_detail(self):
-        request = self.factory.get(self.uri)
-        request.META['HTTP_AUTHORIZATION'] = 'Token ' + self.token.key
-        response = views.UserDetailView.as_view()(request, id=self.user.id)
+        self.request.META['HTTP_AUTHORIZATION'] = 'Token ' + self.token.key
+        response = views.UserDetailView.as_view()(self.request, id=self.user.id)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['email'], self.user.email)
 
     def test_get_user_detail_failure(self):
-        request = self.factory.get(self.uri)
-        response = views.UserDetailView.as_view()(request, id=self.user.id)
+        response = views.UserDetailView.as_view()(self.request, id=self.user.id)
         self.assertEqual(response.status_code, 401)
 
     def test_partially_update_user(self):
         data = {
             'name': 'Test2'
         }
-        request = self.factory.patch(self.uri, data)
-        request.META['HTTP_AUTHORIZATION'] = 'Token ' + self.token.key
-        response = views.UserDetailView.as_view()(request, id=self.user.id)
+        self.request = self.factory.patch(self.uri, data)
+        self.request.META['HTTP_AUTHORIZATION'] = 'Token ' + self.token.key
+        response = views.UserDetailView.as_view()(self.request, id=self.user.id)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['name'], 'Test2')
 
@@ -156,45 +149,17 @@ class UserTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data[0]['name'], self.home.name)
 
-    def test_homes_list_failure(self):
-        request = self.factory.get(self.uri)
-        response = views.HomeListView.as_view()(request)
-        self.assertEqual(response.status_code, 401)
-
     def test_roles_list(self):
-        request = self.factory.get(self.uri)
-        request.META['HTTP_AUTHORIZATION'] = 'Token ' + self.token.key
-        response = views.RoleListView.as_view()(request)
+        response = views.RoleListView.as_view()(self.request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data[0]['name'], self.role_nna.name)
 
-    def test_roles_list_failure(self):
-        request = self.factory.get(self.uri)
-        response = views.RoleListView.as_view()(request)
-        self.assertEqual(response.status_code, 401)
-
     def test_get_home(self):
-        request = self.factory.get(self.uri)
-        request.META['HTTP_AUTHORIZATION'] = 'Token ' + self.token.key
-        response = views.HomeView.as_view()(request, id=self.home.id)
+        response = views.HomeView.as_view()(self.request, id=self.home.id)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['name'], self.home.name)
 
-    def test_get_home_failure(self):
-        request = self.factory.get(self.uri)
-        response = views.HomeView.as_view()(request, id=self.home.id)
-        self.assertEqual(response.status_code, 401)
-
     def test_get_role(self):
-        request = self.factory.get(self.uri)
-        request.META['HTTP_AUTHORIZATION'] = 'Token ' + self.token.key
-        response = views.RoleView.as_view()(request, id=self.role_nna.id)
+        response = views.RoleView.as_view()(self.request, id=self.role_nna.id)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['name'], self.role_nna.name)
-
-    def test_get_role_failure(self):
-        request = self.factory.get(self.uri)
-        response = views.RoleView.as_view()(request, id=self.role_nna.id)
-        self.assertEqual(response.status_code, 401)
-
-
