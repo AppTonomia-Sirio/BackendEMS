@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/ff6493a1-fd03-48a8-b99f-471108e34b20/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/AppTonomia",
+    "appService.deploySubpath": "."
+}
