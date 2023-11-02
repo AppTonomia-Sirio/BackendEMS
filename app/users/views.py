@@ -14,8 +14,10 @@ from .permissions import IsSuperUserToDelete
 
 # LOGIN / REGISTER Views
 
+
 class LoginView(APIView):
     """Retrieves a token for a user with the given credentials"""
+
     permission_classes = ()
 
     class InputSerializer(serializers.Serializer):
@@ -29,15 +31,20 @@ class LoginView(APIView):
             password = serializer.validated_data["password"]
             user = authenticate(email=email, password=password)
             if user:
-                return Response({"token": user.auth_token.key}, status=status.HTTP_200_OK)
+                return Response(
+                    {"token": user.auth_token.key}, status=status.HTTP_200_OK
+                )
             else:
-                return Response({"error": "Wrong Credentials"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {"error": "Wrong Credentials"}, status=status.HTTP_400_BAD_REQUEST
+                )
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserCreate(generics.CreateAPIView):
     """Creates a new user"""
+
     authentication_classes = ()
     permission_classes = ()
     serializer_class = UserSerializer
@@ -46,6 +53,7 @@ class UserCreate(generics.CreateAPIView):
 # Lists
 class HomeListView(generics.ListAPIView):
     """Lists all homes"""
+
     permission_classes = ()
     authentication_classes = ()
     queryset = Home.objects.all()
@@ -54,6 +62,7 @@ class HomeListView(generics.ListAPIView):
 
 class RoleListView(generics.ListAPIView):
     """Lists all roles"""
+
     permission_classes = ()
     authentication_classes = ()
     queryset = Role.objects.all()
@@ -62,8 +71,10 @@ class RoleListView(generics.ListAPIView):
 
 # Users data
 
+
 class CurrentUserView(APIView):
     """Retrieves the data of the current user"""
+
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
@@ -74,8 +85,24 @@ class CurrentUserView(APIView):
 
 class UserListView(generics.ListAPIView):
     """Lists all users"""
-    queryset = CustomUser.objects.all()
+
     serializer_class = UserSerializer
+
+    def get_queryset(self):
+        """
+        Optionally restricts the returned purchases to a given user,
+        by filtering against: `home` | `active` query parameter in the URL.
+        """
+        queryset = CustomUser.objects.all()
+        home = self.request.query_params.get("home")
+        active = self.request.query_params.get("active")
+        role = self.request.query_params.get("role")
+        if home is not None:
+            queryset = queryset.filter(home__name=home)
+        if active is not None:
+            active = active.lower() == "true"  # transform to boolean
+            queryset = queryset.filter(is_active=active)
+        return queryset
 
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
@@ -83,28 +110,32 @@ class UserListView(generics.ListAPIView):
 
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     """Retrieves, updates or deletes a user"""
+
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
-    lookup_field = 'id'
+    lookup_field = "id"
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated, IsSuperUserToDelete]
 
 
 # Home data and role data
 
+
 class HomeView(generics.RetrieveAPIView):
     """Retrieves, updates or deletes a home"""
+
     permission_classes = ()
     authentication_classes = ()
     queryset = Home.objects.all()
     serializer_class = HomeSerializer
-    lookup_field = 'id'
+    lookup_field = "id"
 
 
 class RoleView(generics.RetrieveAPIView):
     """Retrieves, updates or deletes a role"""
+
     permission_classes = ()
     authentication_classes = ()
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
-    lookup_field = 'id'
+    lookup_field = "id"
