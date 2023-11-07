@@ -88,6 +88,24 @@ Autorization: Token <token>
 ## Users
 Users section of API is used for user management. It supports creating, updating, deleting and getting users.
 
+### Getting a list of users
+**You must be authenticated to use this endpoint**
+To get a list of users, make a GET request to the `/users/` endpoint.
+You can use query parameters to filter the list:
+- use `?active=`(`true` or `false`) to filter by activated users
+- use `?home=` to filter by name of the user's home
+#### request
+```
+GET /users/
+```
+#### response
+```
+[{
+  "id": 1,
+  "email": "email@test.com"
+  ...
+}...]
+```
 ### Getting data of current user
 **You must be authenticated to use this endpoint**
 To get data of current user, make a GET request to the `/users/current` endpoint.
