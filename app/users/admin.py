@@ -6,22 +6,22 @@ from .models import Home, CustomUser
 class CustomUserAdmin(UserAdmin):
     # Custom admin for NNA model
     model = CustomUser
-    list_display = ('id', 'email', 'name', 'surname', 'document', 'date_of_birth', 'home', 'is_active')
+    list_display = ('id', 'email', 'name', 'surname', 'document', 'date_of_birth', 'home', 'status')
     list_filter = ('is_active', 'home', 'roles')
 
     # Fieldsets for admin page
     fieldsets = (
         (None, {'fields': ('email', 'password',)}),
-        ('Personal Info', {'fields': ('name', 'surname', 'document', 'date_of_birth', 'home', 'roles', 'is_active')}),
+        ('Personal Info', {'fields': ('name', 'surname', 'document', 'date_of_birth', 'home', 'roles', 'status')}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
             'fields': ('email', 'password1', 'password2', 'name', 'surname',
-                       'document', 'date_of_birth', 'home', 'roles', 'is_active'),
+                       'document', 'date_of_birth', 'home', 'roles', 'status'),
         }),
     )
-    search_fields = ('id', 'email', 'name', 'surname', 'document', 'date_of_birth', 'home')
+    search_fields = ('id', 'email', 'name', 'surname', 'document', 'date_of_birth', 'home', 'roles', 'status')
     ordering = ('id',)
 
 

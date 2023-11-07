@@ -169,6 +169,29 @@ GET /users/<user_id>
   ...
 }
 ```
+
+### Changing status of a user
+**You must be authenticated to use this endpoint**
+**You must be an admin or superuser to use this endpoint**
+To change status of a user, make a PUT request to the `/users/<user_id>/status` endpoint. The request body should contain the following fields:
+- status ('Active', 'Pending' or 'Frozen')
+#### request
+```
+PUT /users/<user_id>/status
+```
+
+```json
+{
+    "status": "Active"
+}
+```
+#### response
+```
+{
+  'status': 'Active'
+}
+```
+
 ### Homes 
 
 #### Retrieving a list of homes
