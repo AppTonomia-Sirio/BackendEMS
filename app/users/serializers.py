@@ -10,6 +10,15 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}, 'is_active': {'read_only': True}}
 
     def create(self, validated_data):
+        required_fields = ['email', 'name', 'surname', 'document', 'date_of_birth', 'home', 'roles']
+        errors = {}
+
+        for field in required_fields:
+            if not validated_data.get(field):
+                errors[field] = 'This field is required'
+        if errors:
+            raise serializers.ValidationError(errors)
+
         user = CustomUser(
             email=validated_data['email'],
             name=validated_data['name'],

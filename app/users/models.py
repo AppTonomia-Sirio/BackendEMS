@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from .validators import DocumentValidator, PasswordValidator
 from django.db import models
 
 
@@ -36,7 +37,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=255, blank=True, null=True)
     surname = models.CharField(max_length=255, blank=True, null=True)
     email = models.EmailField(unique=True)
-    document = models.CharField(max_length=255, blank=True, null=True)
+    password = models.CharField(max_length=255, blank=True, null=True, validators=[PasswordValidator()])
+    document = models.CharField(max_length=255, blank=True, null=True, validators=[DocumentValidator()])
     date_of_birth = models.DateField(blank=True, null=True)
     home = models.ForeignKey('Home', on_delete=models.CASCADE, blank=True, null=True)
     roles = models.ManyToManyField('Role', blank=True)
