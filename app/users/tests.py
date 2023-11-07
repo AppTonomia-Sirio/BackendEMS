@@ -63,7 +63,7 @@ class UserTests(APITestCase):
             'surname': 'Test2',
             'email': 'email2@test.com',
             'password': 'test2',
-            'document': '123456789',
+            'document': '12345678Y',
             'date_of_birth': '1990-01-01',
             'home': self.home.id,
             'roles': [self.role_nna.id],
