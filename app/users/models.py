@@ -49,6 +49,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     )
     status = models.CharField(max_length=255, choices=STATUS_CHOICES, default='Pending')
 
+    created_at = models.DateTimeField(auto_now_add=True)
     id = models.AutoField(primary_key=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
