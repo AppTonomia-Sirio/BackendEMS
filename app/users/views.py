@@ -2,9 +2,11 @@ from rest_framework.response import Response
 from rest_framework import status, serializers
 from rest_framework.views import APIView
 from rest_framework import generics
+import django_filters.rest_framework
 from .serializers import UserSerializer, HomeSerializer, RoleSerializer
 from django.contrib.auth import authenticate
 from .models import CustomUser, Home, Role
+from .filters import UserFilter
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsSuperUserToDelete
@@ -87,23 +89,9 @@ class UserListView(generics.ListAPIView):
     """Lists all users"""
 
     serializer_class = UserSerializer
-
-    def get_queryset(self):
-        """
-        Optionally restricts the returned purchases to a given user,
-        by filtering against: `home` | `active` query parameter in the URL.
-        """
-        queryset = CustomUser.objects.all()
-        home = self.request.query_params.get("home")
-        active = self.request.query_params.get("active")
-        role = self.request.query_params.get("role")
-        if home is not None:
-            queryset = queryset.filter(home__name=home)
-        if active is not None:
-            active = active.lower() == "true"  # transform to boolean
-            queryset = queryset.filter(is_active=active)
-        return queryset
-
+    queryset = CustomUser.objects.all()
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
+    filterset_class = UserFilter
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
