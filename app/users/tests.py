@@ -53,14 +53,14 @@ class UserTests(APITestCase):
 
     def test_register(self):
         data = {
-            "name": "Test2",
-            "surname": "Test2",
-            "email": "email2@test.com",
-            "password": "test2",
-            "document": "123456789",
-            "date_of_birth": "1990-01-01",
-            "home": self.home.id,
-            "roles": [self.role_nna.id],
+            'name': 'Test2',
+            'surname': 'Test2',
+            'email': 'email2@test.com',
+            'password': 'test2',
+            'document': '12345678Y',
+            'date_of_birth': '1990-01-01',
+            'home': self.home.id,
+            'roles': [self.role_nna.id],
         }
         self.request = self.factory.post(self.uri, data)
         response = views.UserCreate.as_view()(self.request)
