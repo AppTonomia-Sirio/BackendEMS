@@ -9,7 +9,7 @@ from .models import CustomUser, Home, Role
 from .filters import UserFilter
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from .permissions import IsSuperUserToDelete
+from .permissions import IsSuperUserToDelete, IsAdminOrSuperUser
 
 
 # Create your views here.
@@ -104,6 +104,29 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = "id"
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated, IsSuperUserToDelete]
+
+
+class UserChangeStatusView(APIView):
+    """Changes the status of a user"""
+
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminOrSuperUser]
+
+    def post(self, request, id):
+        user = CustomUser.objects.get(id=id)
+        if not 'status' in request.data:
+            return Response(
+                {"error": "Status field is required"}, status=status.HTTP_400_BAD_REQUEST
+            )
+        new_status = request.data["status"]
+        if new_status not in ["Active", "Pending", "Frozen"]:
+            return Response(
+                {"error": "Status must be Active, Pending or Frozen"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        user.status = new_status
+        user.save()
+        return Response({'status': new_status},status=status.HTTP_200_OK)
 
 
 # Home data and role data

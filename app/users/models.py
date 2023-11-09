@@ -42,10 +42,17 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     date_of_birth = models.DateField(blank=True, null=True)
     home = models.ForeignKey('Home', on_delete=models.CASCADE, blank=True, null=True)
     roles = models.ManyToManyField('Role', blank=True)
+    STATUS_CHOICES = (
+        ('Active', 'Active'),
+        ('Pending', 'Pending'),
+        ('Frozen', 'Frozen'),
+    )
+    status = models.CharField(max_length=255, choices=STATUS_CHOICES, default='Pending')
 
+    created_at = models.DateTimeField(auto_now_add=True)
     id = models.AutoField(primary_key=True)
     is_staff = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
 
     objects = CustomUserManager()
 

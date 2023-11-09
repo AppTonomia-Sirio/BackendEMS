@@ -11,3 +11,9 @@ class IsSuperUserToDelete(permissions.BasePermission):
             return True
         # Delete only for superusers
         return request.user and request.user.is_superuser
+
+
+class IsAdminOrSuperUser(permissions.BasePermission):
+    def has_permission(self, request, view):
+        # Check if user has role Admin
+        return request.user and request.user.roles.filter(name='Admin').exists() or request.user.is_superuser

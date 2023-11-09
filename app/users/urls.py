@@ -9,12 +9,14 @@ from .views import (
     UserDetailView,
     HomeView,
     RoleView,
+    UserChangeStatusView
 
 )
 
 urlpatterns = [
     path('', UserListView.as_view()),
     path('<int:id>/', UserDetailView.as_view()),
+    path('<int:id>/status', UserChangeStatusView.as_view()),
     path('login/', LoginView.as_view()),
     path('register/', UserCreate.as_view()),
     path('home/<int:id>', HomeView.as_view()),
