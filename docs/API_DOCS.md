@@ -92,7 +92,7 @@ Users section of API is used for user management. It supports creating, updating
 **You must be authenticated to use this endpoint**
 To get a list of users, make a GET request to the `/users/` endpoint.
 You can use query parameters to filter the list:
-- use `?active=`(`true` or `false`) to filter by activated users
+- use `?status=` to filter by status of users
 - use `?home=` to filter by name of the user's home
 #### request
 ```
