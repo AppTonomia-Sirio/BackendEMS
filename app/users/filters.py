@@ -4,7 +4,7 @@ import django_filters
 
 class UserFilter(django_filters.FilterSet):
     home = django_filters.CharFilter(field_name="home__name")
-    order = OrderingFilter(
+    order = django_filters.OrderingFilter(
         fields=(
             ('created_by', 'created_by'),
         )
