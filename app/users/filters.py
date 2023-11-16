@@ -8,7 +8,7 @@ class UserFilter(django_filters.FilterSet):
         fields=(
             ('created_at', 'created_at'),
             ('name', 'name'),
-            ('status', 'status')
+            ('status', 'status'),
             ('date_of_birth','date_of_birth')
         )
     )
