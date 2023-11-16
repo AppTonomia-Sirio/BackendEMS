@@ -4,8 +4,11 @@ import django_filters
 
 class UserFilter(django_filters.FilterSet):
     home = django_filters.CharFilter(field_name="home__name")
-    status = django_filters.CharFilter(field_name="status")
-
+    order = OrderingFilter(
+        fields=(
+            ('created_by', 'created_by'),
+        )
+    )
     class Meta:
         model = CustomUser
-        fields = ["home", "status"]
+        fields = ["status", "name", "surname", "email", "document", "date_of_birth", "created_at"]
