@@ -92,8 +92,9 @@ Users section of API is used for user management. It supports creating, updating
 **You must be authenticated to use this endpoint**
 To get a list of users, make a GET request to the `/users/` endpoint.
 You can use query parameters to filter the list:
-- use `?active=`(`true` or `false`) to filter by activated users
-- use `?home=` to filter by name of the user's home
+- use `?home=` to filter by home of users
+- You can use the same format for the following: `["status", "name", "surname", "email", "document", "date_of_birth", "created_at"]`
+- You can use `?order=` with `["created_by","date_of_birth","name","satus"]` to order the list. Add `-` before the key to order in descending order.
 #### request
 ```
 GET /users/

@@ -53,14 +53,14 @@ class UserTests(APITestCase):
 
     def test_register(self):
         data = {
-            'name': 'Test2',
-            'surname': 'Test2',
-            'email': 'email2@test.com',
-            'password': 'test2',
-            'document': '12345678Y',
-            'date_of_birth': '1990-01-01',
-            'home': self.home.id,
-            'roles': [self.role_nna.id],
+            "name": "Test2",
+            "surname": "Test2",
+            "email": "email2@test.com",
+            "password": "test2",
+            "document": "12345678Y",
+            "date_of_birth": "1990-01-01",
+            "home": self.home.id,
+            "roles": [self.role_nna.id],
         }
         self.request = self.factory.post(self.uri, data)
         response = views.UserCreate.as_view()(self.request)
@@ -165,7 +165,7 @@ class UserTests(APITestCase):
 
     def test_get_list_filter_active(self):
         self.request = self.factory.get(
-            self.uri + "?active=true",
+            self.uri + "?status=Pending",
         )
         self.request.META["HTTP_AUTHORIZATION"] = "Token " + self.token.key
         response = views.UserListView.as_view()(self.request)
@@ -174,7 +174,7 @@ class UserTests(APITestCase):
 
     def test_get_list_filter_active_empty(self):
         self.request = self.factory.get(
-            self.uri + "?active=false",
+            self.uri + "?status=Active",
         )
         self.request.META["HTTP_AUTHORIZATION"] = "Token " + self.token.key
         response = views.UserListView.as_view()(self.request)
