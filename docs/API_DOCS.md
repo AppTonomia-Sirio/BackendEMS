@@ -20,6 +20,7 @@
 #### - [Getting list of roles](#getting-list-of-roles)
 #### - [Getting role details](#getting-role-details)
 ## [Not found](#not-found)
+#### - [Not found](#not-found)
 
 ## Authentication
 To use the majority of the API endpoints, you need to be authenticated.
@@ -287,7 +288,7 @@ To get the details of a role, we need to send a `GET` request to `users/roles/<i
 }
 ```
 
-# Not found
+## Not found
 If you try to access an endpoint that doesn't exist, you will get a `404` response with the following data:
 ```json
 {
