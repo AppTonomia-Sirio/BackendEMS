@@ -12,13 +12,13 @@ class CustomUserAdmin(UserAdmin):
     # Fieldsets for admin page
     fieldsets = (
         (None, {'fields': ('email', 'password',)}),
-        ('Personal Info', {'fields': ('name', 'surname', 'document', 'date_of_birth', 'home', 'roles', 'status', 'created_at',)}),
+        ('Personal Info', {'fields': ('name', 'surname', 'document', 'date_of_birth', 'home', 'roles', 'status',)}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
             'fields': ('email', 'password1', 'password2', 'name', 'surname',
-                       'document', 'date_of_birth', 'home', 'roles', 'status', 'created_at',),
+                       'document', 'date_of_birth', 'home', 'roles', 'status'),
         }),
     )
     search_fields = ('id', 'email', 'name', 'surname', 'document', 'date_of_birth', 'home', 'roles', 'status')
