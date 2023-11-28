@@ -112,6 +112,7 @@ class UserTests(APITestCase):
         response = views.UserDetailView.as_view()(self.request, id=self.user.id)
         self.assertEqual(response.status_code, 401)
 
+
     def test_partially_update_user(self):
         data = {"name": "Test2"}
         self.request = self.factory.patch(self.uri, data)

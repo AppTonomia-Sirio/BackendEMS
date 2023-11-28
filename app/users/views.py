@@ -9,7 +9,7 @@ from .models import CustomUser, Home, Role
 from .filters import UserFilter
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from .permissions import IsSuperUserToDelete, IsAdminOrSuperUser
+from .permissions import UserDetailPermission, IsAdminOrSuperUser
 
 
 # Create your views here.
@@ -103,7 +103,7 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializer
     lookup_field = "id"
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated, IsSuperUserToDelete]
+    permission_classes = [IsAuthenticated, UserDetailPermission]
 
 
 class UserChangeStatusView(APIView):
