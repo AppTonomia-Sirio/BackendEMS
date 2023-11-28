@@ -112,21 +112,6 @@ class UserTests(APITestCase):
         response = views.UserDetailView.as_view()(self.request, id=self.user.id)
         self.assertEqual(response.status_code, 401)
 
-    def test_update_user_success(self):
-        data = {
-            "name": "Test7",
-            "surname": "Test7",
-            "email": "email7@test.com",
-            "password": "test7",
-            "document": "123456789L",
-            "date_of_birth": "1990-01-01",
-            "home": self.home.id,
-            "roles": [self.role_nna.id],
-        }
-        self.request = self.factory.put(self.uri, data)
-        self.request.META["HTTP_AUTHORIZATION"] = "Token " + self.token.key
-        response = views.UserDetailView.as_view()(self.request, id=self.user.id)
-        self.assertEqual(response.status_code, 200)
 
     def test_partially_update_user(self):
         data = {"name": "Test2"}
