@@ -23,8 +23,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install -r app/requirements.txt
+        poetry install --no-interaction --no-root
     - name: Building web app
       uses: azure/appservice-build@v2
 
