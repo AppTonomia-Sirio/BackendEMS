@@ -151,6 +151,5 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
 }
 
-import os
 if 'WEBSITE_HOSTNAME' in os.environ: # Running on Azure
     from .azure import *
