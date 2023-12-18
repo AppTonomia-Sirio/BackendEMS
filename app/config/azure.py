@@ -2,6 +2,7 @@ from .settings import *
 import os
 
 SECRET_KEY = os.getenv('SECRET_KEY')
+DEBUG = False
 
 ALLOWED_HOSTS = [os.environ['WEBSITE_HOSTNAME']] if 'WEBSITE_HOSTNAME' in os.environ else []
 CSRF_TRUSTED_ORIGINS = ['https://'+ os.environ['WEBSITE_HOSTNAME']] if 'WEBSITE_HOSTNAME' in os.environ else []
@@ -27,5 +28,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # Local
+    "config.middleware.NotFoundMiddleware",
+    "config.middleware.InternalServerError",
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
