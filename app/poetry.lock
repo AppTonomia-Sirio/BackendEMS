@@ -539,7 +539,18 @@ secure = ["certifi", "cryptography (>=1.9)", "idna (>=2.0.0)", "pyopenssl (>=17.
 socks = ["pysocks (>=1.5.6,!=1.5.7,<2.0)"]
 zstd = ["zstandard (>=0.18.0)"]
 
+[[package]]
+name = "whitenoise"
+version = "3.3.1"
+description = "Radically simplified static file serving for WSGI applications"
+optional = false
+python-versions = "*"
+files = [
+    {file = "whitenoise-3.3.1-py2.py3-none-any.whl", hash = "sha256:15f43b2e701821b95c9016cf469d29e2a546cb1c7dead584ba82c36f843995cf"},
+    {file = "whitenoise-3.3.1.tar.gz", hash = "sha256:9d81515f2b5b27051910996e1e860b1332e354d9e7bcf30c98f21dcb6713e0dd"},
+]
+
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "e53082b743f8365faae27ec4a61ea71c2fe66ce72d8e8ade5a8019edcdcaa623"
+content-hash = "dd43e25e5899d8472285cf75d9bfdb94afe5f65ab0cffd06dc1445c08b8ccb64"
