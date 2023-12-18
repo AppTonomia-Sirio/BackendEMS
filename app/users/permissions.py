@@ -11,8 +11,9 @@ class UserDetailPermission(permissions.BasePermission):
             return request.user and request.user.roles.filter(name='Admin').exists() or\
                 request.user.is_superuser or\
                 request.user.id == view.kwargs['id']
-        # Delete only for superusers
-        return request.user and request.user.is_superuser
+        # Delete only for superusers or admins
+        return request.user and (request.user.roles.filter(name='Admin').exists() or
+                                 request.user.is_superuser)
 
 
 class IsAdminOrSuperUser(permissions.BasePermission):
