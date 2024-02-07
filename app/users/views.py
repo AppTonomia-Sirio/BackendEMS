@@ -11,7 +11,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from .permissions import UserDetailPermission, IsAdminOrSuperUser
 
-
+"""
 # Create your views here.
 
 # LOGIN / REGISTER Views
@@ -150,3 +150,4 @@ class RoleView(generics.RetrieveAPIView):
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
     lookup_field = "id"
+"""

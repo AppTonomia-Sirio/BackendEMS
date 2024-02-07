@@ -13,7 +13,7 @@ from .views import (
 
 )
 
-urlpatterns = [
+"""urlpatterns = [
     path('', UserListView.as_view()),
     path('<int:id>/', UserDetailView.as_view()),
     path('<int:id>/status', UserChangeStatusView.as_view()),
@@ -24,4 +24,4 @@ urlpatterns = [
     path('roles/<int:id>', RoleView.as_view()),
     path('roles/', RoleListView.as_view()),
     path('current/', CurrentUserView.as_view()),
-]
+]"""
