@@ -3,9 +3,10 @@ from .validators import DocumentValidator, PasswordValidator
 from django.core.validators import MaxValueValidator, MinValueValidator
 from rest_framework.authtoken.models import Token
 from django.db import models
+from polymorphic.models import PolymorphicModel, PolymorphicManager
 
 
-class CustomUserManager(BaseUserManager):
+class CustomUserManager(BaseUserManager, PolymorphicManager):
     # Custom user manager
     def create_user(self, email, name, surname, password=None, **extra_fields):
         if not email:
@@ -39,7 +40,7 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, name, surname, password, **extra_fields)
 
 
-class CustomUser(AbstractBaseUser, PermissionsMixin):
+class CustomUser(AbstractBaseUser, PermissionsMixin, PolymorphicModel):
     # Custom user model
     class Meta:
         verbose_name = 'user'
