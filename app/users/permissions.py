@@ -1,4 +1,4 @@
-from rest_framework import permissions
+"""from rest_framework import permissions
 
 
 class UserDetailPermission(permissions.BasePermission):
@@ -23,3 +23,4 @@ class IsAdminOrSuperUser(permissions.BasePermission):
 
 
 
+"""

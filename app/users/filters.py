@@ -1,4 +1,4 @@
-from .models import CustomUser
+"""from .models import CustomUser
 import django_filters
 
 
@@ -16,3 +16,4 @@ class UserFilter(django_filters.FilterSet):
         model = CustomUser
         fields = ["status", "name", "surname", "email", "document", "date_of_birth", "created_at"]
         #These are exact lookups
+"""
