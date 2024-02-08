@@ -13,6 +13,6 @@ from .models import CustomUser, Role, NNAUser, StaffUser
 @receiver(post_migrate)
 def create_initial_roles(sender, **kwargs):
     if Role.objects.count() == 0:
-        Role.objects.get_or_create(name='NNA')
-        Role.objects.get_or_create(name='Therapist')
-        Role.objects.get_or_create(name='Admin')
+        Role.objects.get_or_create(name='Educador Tutor')
+        Role.objects.get_or_create(name='Terapeuta')
+        Role.objects.get_or_create(name='Trabajador Social')
