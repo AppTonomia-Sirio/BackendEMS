@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group
+from rest_framework.authtoken.models import TokenProxy
 
 from .models import NNAUser, StaffUser, Home, Role
 
@@ -81,4 +82,5 @@ admin.site.register(StaffUser, StaffAdmin)
 admin.site.register(Role, RoleAdmin)
 admin.site.register(Home, HomeAdmin)
 admin.site.unregister(Group)
+admin.site.unregister(TokenProxy)
 admin.site.site_header = 'Sirio App Administration'

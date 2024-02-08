@@ -44,12 +44,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # Local
-    "users",
     # Third party
     "rest_framework",
     "rest_framework.authtoken",
     "django_filters",
+    # Local
+    "users",
 ]
 
 MIDDLEWARE = [
