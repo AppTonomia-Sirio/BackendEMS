@@ -5,6 +5,40 @@ from rest_framework.authtoken.models import Token
 from django.db import models
 
 
+class CustomUserManager(BaseUserManager):
+    # Custom user manager
+    def create_user(self, email, name, surname, password=None, **extra_fields):
+        if not email:
+            raise ValueError('The Email field must be set')
+        if not name:
+            raise ValueError('The Name field must be set')
+        if not surname:
+            raise ValueError('The Surname field must be set')
+        if not password:
+            raise ValueError('The Password field must be set')
+
+        user = self.model(
+            email=self.normalize_email(email),
+            name=name,
+            surname=surname,
+            **extra_fields
+        )
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, name, surname, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True')
+
+        return self.create_user(email, name, surname, password, **extra_fields)
+
+
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     # Custom user model
     class Meta:
@@ -25,6 +59,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['name', 'surname', 'password']
 
+    objects = CustomUserManager()
+
     def save(self, *args, **kwargs):
         is_new = self.pk is None
         super().save(*args, **kwargs)
@@ -36,7 +72,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 
 class NNAUser(CustomUser):
-
     class Meta:
         verbose_name = 'NNA'
         verbose_name_plural = 'NNAs'
@@ -69,7 +104,6 @@ class NNAUser(CustomUser):
 
 
 class StaffUser(CustomUser):
-
     class Meta:
         verbose_name = 'Staff'
         verbose_name_plural = 'Staff'
