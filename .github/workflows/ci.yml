@@ -2,9 +2,13 @@ name: Django CI
 
 on:
   push:
-    branches: [ "develop" ]
+    branches:
+      - '**'        # matches every branch
+      - '!main'   # excludes master
   pull_request:
-    branches: [ "develop" ]
+    branches:
+      - '**'        # matches every branch
+      - '!main'   # excludes master
 
 jobs:
   build:
