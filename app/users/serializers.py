@@ -1,6 +1,6 @@
 from .models import CustomUser, Home, Role, NNAUser, StaffUser
 from rest_framework import serializers
-from rest_polymorphic import PolymorphicSerializer
+from rest_polymorphic.serializers import PolymorphicSerializer
 
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:

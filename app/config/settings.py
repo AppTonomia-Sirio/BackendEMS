@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "django_filters",
     'polymorphic',
-    'rest_polymorphic'
+    'rest_polymorphic',
     # Local
     "users",
 ]
