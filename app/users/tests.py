@@ -1,6 +1,6 @@
 from rest_framework.test import APITestCase
-from rest_framework.test import APIRequestFactory
-from . import views
+from rest_framework.test import APIClient
+from .views import *
 from django.contrib.auth.hashers import make_password
 from .models import CustomUser, Home, Role
 from rest_framework.authtoken.models import Token
@@ -8,10 +8,11 @@ from rest_framework.authtoken.models import Token
 
 class UserTests(APITestCase):
     def setUp(self):
-        self.factory = APIRequestFactory()
-        self.role_nna = Role.objects.create(name="NNA")
-        self.role_therapist = Role.objects.create(name="Therapist")
-        self.role_admin = Role.objects.create(name="Admin")
+        self.client = APIClient()
+        self.uri = "/users/"
+        self.role_tutor = Role.objects.get(name="Educador Tutor")
+        self.role_therapist = Role.objects.get(name="Terapeuta")
+        self.role_social_worker = Role.objects.get(name="Trabajador Social")
         self.home = Home.objects.create(name="Home1", address="Address1")
 
         self.user = CustomUser.objects.create(
@@ -22,10 +23,34 @@ class UserTests(APITestCase):
         )
 
         self.token = Token.objects.get(user=self.user)
-    
+
     def test_token_created(self):
         token = Token.objects.get(user=self.user)
         self.assertEqual(token.key, self.token.key)
+
+    def test_homes_list(self):
+        response = self.client.get(self.uri + "homes/", format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data[0]["name"], self.home.name)
+
+    def test_roles_list(self):
+        response = self.client.get(self.uri + "roles/", format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data[0]["name"], self.role_tutor.name)
+
+    def test_get_home(self):
+        response = self.client.get(
+            self.uri + "home/" + str(self.home.id), format="json"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["name"], self.home.name)
+
+    def test_get_role(self):
+        response = self.client.get(
+            self.uri + "role/" + str(self.role_tutor.id), format="json"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["name"], self.role_tutor.name)
 
     """def test_login_success(self):
         data = {"email": "email@test.com", "password": "test"}

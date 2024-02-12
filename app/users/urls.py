@@ -1,7 +1,10 @@
 from django.urls import path
-from .views import UserViews
+from .views import *
 
 
 urlpatterns = [
-    path('<int:id>/', UserViews.as_view()),
+    path("home/<int:id>", HomeView.as_view()),
+    path("homes/", HomeListView.as_view()),
+    path("role/<int:id>", RoleView.as_view()),
+    path("roles/", RoleListView.as_view()),
 ]
