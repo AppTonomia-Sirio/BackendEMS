@@ -68,7 +68,7 @@ class NNAUserSerializer(serializers.ModelSerializer):
         }
 
         def create(self, validated_data):
-            required_fields = NNAUser.REQUIRED_FIELDS + NNAUser.USERNAME_FIELD
+            required_fields = NNAUser.REQUIRED_FIELDS + [NNAUser.USERNAME_FIELD]
             errors = {}
 
             for field in required_fields:
@@ -110,7 +110,7 @@ class StaffUserSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        required_fields = StaffUser.REQUIRED_FIELDS + StaffUser.USERNAME_FIELD
+        required_fields = StaffUser.REQUIRED_FIELDS + [StaffUser.USERNAME_FIELD]
         errors = {}
 
         for field in required_fields:
@@ -119,15 +119,20 @@ class StaffUserSerializer(serializers.ModelSerializer):
         if errors:
             raise serializers.ValidationError(errors)
 
-        user = NNAUser(
+        user = StaffUser(
             email=validated_data["email"],
             name=validated_data["name"],
             surname=validated_data["surname"],
+            is_admin=validated_data["is_admin"]
         )
         user.set_password(validated_data["password"])
-        user.roles.set(validated_data["roles"])
-        user.homes.set(validated_data["homes"])
         user.save()
+        for role in validated_data["roles"]:
+            user.roles.add(role)
+            user.save()
+        for home in validated_data["homes"]:
+            user.homes.add(home)
+            user.save()
         return user
 
 

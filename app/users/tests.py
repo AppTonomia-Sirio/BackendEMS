@@ -51,7 +51,32 @@ class UserTests(APITestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["name"], self.role_tutor.name)
-
+    
+    def test_create_NNA(self):
+        response =self.client.post(self.uri+"nna/", {
+                                                    "email":"b@b.com",
+                                                    "name":"b",
+                                                    "surname":"b",
+                                                    "password":"1234",
+                                                    "date_of_birth":"2016-03-03",
+                                                    "home":self.home.id,
+                                                    "gender":"Other",
+                                                    "entered_at":"2020-03-03"},
+                                                    format="json")
+        self.assertEqual(response.status_code, 201)
+    def test_create_Staff(self):
+        response =self.client.post(self.uri+"staff/", {
+                                                    "email":"d@d.com",
+                                                    "name":"b",
+                                                    "surname":"b",
+                                                    "password":"1234",
+                                                    "homes":[self.home.id],
+                                                    "roles":[self.role_tutor.id],
+                                                    "is_admin":"True"
+                                                    },
+                                                    format="json")
+        self.assertEqual(response.status_code, 201)
+    
     """def test_login_success(self):
         data = {"email": "email@test.com", "password": "test"}
         self.request = self.factory.post(self.uri, data)

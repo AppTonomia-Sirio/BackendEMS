@@ -2,12 +2,23 @@ from rest_framework import generics
 from .models import *
 from .serializers import *
 
+#Create users views
 
-class UserViews(generics.RetrieveUpdateDestroyAPIView):
-    queryset = CustomUser.objects.all()
-    serializer_class = UserPolymorphicSerializer
-    lookup_field = "id"
+class NNAListCreateView(generics.ListCreateAPIView):
+    """Creates a new user"""
 
+    authentication_classes = ()
+    permission_classes = ()
+    queryset = NNAUser.objects.all() #TODO add filters
+    serializer_class = NNAUserSerializer
+
+class StaffListCreateView(generics.ListCreateAPIView):
+    """Creates a new user"""
+
+    authentication_classes = ()
+    permission_classes = () 
+    queryset = StaffUser.objects.all()
+    serializer_class = StaffUserSerializer
 
 # Lists
 class HomeListView(generics.ListAPIView):
