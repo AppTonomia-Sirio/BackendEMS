@@ -98,10 +98,10 @@ class NNAUser(CustomUser):
     mentors = models.ManyToManyField('StaffUser', blank=True, related_name='mentors')
     therapist = models.ForeignKey('StaffUser', on_delete=models.PROTECT, blank=True, null=True)
     autonomy_level = models.IntegerField(default=1, validators=[MaxValueValidator(10), MinValueValidator(1)])
-    is_tutor = models.BooleanField(default=False)
+    tutor = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
     entered_at = models.DateField()
 
-    REQUIRED_FIELDS = ['name', 'surname', 'password', 'date_of_birth', 'home', 'status', 'gender']
+    REQUIRED_FIELDS = ['name', 'surname', 'password', 'date_of_birth', 'home', 'gender']
 
 
 class StaffUser(CustomUser):
