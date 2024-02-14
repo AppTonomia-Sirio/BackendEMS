@@ -59,7 +59,7 @@ class NNAUserSerializer(serializers.ModelSerializer):
             "mentors",
             "therapist",
             "autonomy_level",
-            "is_tutor",
+            "tutor",
             "entered_at",
         )
         extra_kwargs = {
