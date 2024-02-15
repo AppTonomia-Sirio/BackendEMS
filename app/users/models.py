@@ -1,5 +1,5 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from .validators import DocumentValidator, PasswordValidator
+from .validators import PasswordValidator
 from django.core.validators import MaxValueValidator, MinValueValidator
 from rest_framework.authtoken.models import Token
 from django.db import models
@@ -90,7 +90,7 @@ class NNAUser(CustomUser):
         ('Undefined', 'Undefined')
     )
 
-    document = models.CharField(max_length=255, blank=True, null=True, validators=[DocumentValidator()])
+    document = models.CharField(max_length=255, blank=True, null=True)
     date_of_birth = models.DateField()
     home = models.ForeignKey('Home', on_delete=models.PROTECT)
     status = models.CharField(max_length=255, choices=STATUS_CHOICES, default='Pending')

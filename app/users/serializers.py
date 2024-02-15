@@ -84,6 +84,7 @@ class NNAUserSerializer(serializers.ModelSerializer):
                 document=validated_data["document"],
                 date_of_birth=validated_data["date_of_birth"],
                 home=validated_data["home"],
+                gender=validated_data["gender"]
             )
             user.set_password(validated_data["password"])
             user.save()
