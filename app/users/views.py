@@ -1,6 +1,7 @@
 from rest_framework import generics
 from .models import *
 from .serializers import *
+from django_filters import rest_framework as filters
 
 #Create users views
 
@@ -11,6 +12,24 @@ class NNAListCreateView(generics.ListCreateAPIView):
     permission_classes = ()
     queryset = NNAUser.objects.all() #TODO add filters
     serializer_class = NNAUserSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_fields = (
+                        "id",
+                        "email",
+                        "name",
+                        "surname",
+                        "created_at",
+                        "document",
+                        "date_of_birth",
+                        "home",
+                        "status",
+                        "gender",
+                        "mentors",
+                        "therapist",
+                        "autonomy_level",
+                        "tutor",
+                        "entered_at",
+                        )
 
 class StaffListCreateView(generics.ListCreateAPIView):
     """Creates a new user"""
@@ -19,6 +38,18 @@ class StaffListCreateView(generics.ListCreateAPIView):
     permission_classes = () 
     queryset = StaffUser.objects.all()
     serializer_class = StaffUserSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_fields = (
+                        "id",
+                        "email",
+                        "name",
+                        "surname",
+                        "password",
+                        "created_at",
+                        "homes",
+                        "roles",
+                        "is_admin",
+                        )
 
 #Users retrieve and edits
 class NNADetailView(generics.RetrieveUpdateDestroyAPIView):
