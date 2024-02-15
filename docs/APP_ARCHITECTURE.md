@@ -21,7 +21,6 @@ The project is structured as follows:
 -**docs**: This folder contains the project documentation.
 
 ### Implementation Example
-Here is an example of the structure of a flutter bloc tdd project:
 
 ```
 -- app
