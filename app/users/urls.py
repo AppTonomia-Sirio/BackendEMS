@@ -9,4 +9,6 @@ urlpatterns = [
     path("roles/", RoleListView.as_view()),
     path("nna/", NNAListCreateView.as_view()),
     path("staff/", StaffListCreateView.as_view()),
+    path('nna/<int:id>/', NNADetailView.as_view()),
+    path('staff/<int:id>/', StaffDetailView.as_view())
 ]

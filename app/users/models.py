@@ -99,7 +99,7 @@ class NNAUser(CustomUser):
     therapist = models.ForeignKey('StaffUser', on_delete=models.PROTECT, blank=True, null=True)
     autonomy_level = models.IntegerField(default=1, validators=[MaxValueValidator(10), MinValueValidator(1)])
     tutor = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
-    entered_at = models.DateField()
+    entered_at = models.DateField(null=True, blank=True)
 
     REQUIRED_FIELDS = ['name', 'surname', 'password', 'date_of_birth', 'home', 'gender']
 

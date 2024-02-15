@@ -20,6 +20,23 @@ class StaffListCreateView(generics.ListCreateAPIView):
     queryset = StaffUser.objects.all()
     serializer_class = StaffUserSerializer
 
+#Users retrieve and edits
+class NNADetailView(generics.RetrieveUpdateDestroyAPIView):
+    """Retrieves, updates or deletes an NNA"""
+    queryset = NNAUser.objects.all()
+    serializer_class = NNAUserSerializer
+    lookup_field = "id"
+    authentication_classes = ()
+    permission_classes = ()
+
+class StaffDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """Retrieves, updates or deletes a staff"""
+    queryset = StaffUser.objects.all()
+    serializer_class = StaffUserSerializer
+    lookup_field = "id"
+    authentication_classes = ()
+    permission_classes = ()
+
 # Lists
 class HomeListView(generics.ListAPIView):
     """Lists all homes"""

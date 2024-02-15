@@ -21,6 +21,26 @@ class UserTests(APITestCase):
             email="email@test.com",
             password=make_password("test"),
         )
+        self.nna = NNAUser.objects.create(
+            email="b@b",
+            name="name",
+            surname="surname",
+            document="document",
+            date_of_birth="2000-03-03",
+            home=self.home,
+            password=make_password("test"),
+        )
+        self.staff = StaffUser.objects.create(
+            email="c@c",
+            name="name",
+            surname="surname",
+            is_admin=True,
+            password=make_password("test"),
+        )
+        self.staff.homes.add(self.home)
+        self.staff.save()
+        self.staff.roles.add(self.role_social_worker)
+        self.staff.save()
 
         self.token = Token.objects.get(user=self.user)
 
@@ -64,6 +84,7 @@ class UserTests(APITestCase):
                                                     "entered_at":"2020-03-03"},
                                                     format="json")
         self.assertEqual(response.status_code, 201)
+
     def test_create_Staff(self):
         response =self.client.post(self.uri+"staff/", {
                                                     "email":"d@d.com",
@@ -77,6 +98,20 @@ class UserTests(APITestCase):
                                                     format="json")
         self.assertEqual(response.status_code, 201)
     
+    def test_get_staff(self):
+        response = self.client.get(
+            self.uri + "staff/" + str(self.staff.id) + "/", format="json"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["name"], self.staff.name)
+
+    def test_get_nna(self):
+        response = self.client.get(
+            self.uri + "nna/" + str(self.nna.id) + "/", format="json"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["name"], self.nna.name)
+
     """def test_login_success(self):
         data = {"email": "email@test.com", "password": "test"}
         self.request = self.factory.post(self.uri, data)
