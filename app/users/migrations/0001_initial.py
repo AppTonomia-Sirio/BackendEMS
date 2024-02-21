@@ -72,7 +72,7 @@ class Migration(migrations.Migration):
             name='NNAUser',
             fields=[
                 ('customuser_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
-                ('document', models.CharField(blank=True, max_length=255, null=True, validators=[users.validators.DocumentValidator()])),
+                ('document', models.CharField(blank=True, max_length=255, null=True)),
                 ('date_of_birth', models.DateField()),
                 ('status', models.CharField(choices=[('Active', 'Active'), ('Pending', 'Pending'), ('Frozen', 'Frozen'), ('Locked', 'Locked')], default='Pending', max_length=255)),
                 ('gender', models.CharField(choices=[('Male', 'Male'), ('Female', 'Female'), ('Other', 'Other'), ('Undefined', 'Undefined')], default='Undefined', max_length=255)),

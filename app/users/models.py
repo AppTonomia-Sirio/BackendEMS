@@ -1,5 +1,5 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from .validators import DocumentValidator, PasswordValidator
+from .validators import PasswordValidator
 from django.core.validators import MaxValueValidator, MinValueValidator
 from rest_framework.authtoken.models import Token
 from django.db import models
@@ -90,7 +90,7 @@ class NNAUser(CustomUser):
         ('Undefined', 'Undefined')
     )
 
-    document = models.CharField(max_length=255, blank=True, null=True, validators=[DocumentValidator()])
+    document = models.CharField(max_length=255, blank=True, null=True)
     date_of_birth = models.DateField()
     home = models.ForeignKey('Home', on_delete=models.PROTECT)
     status = models.CharField(max_length=255, choices=STATUS_CHOICES, default='Pending')
@@ -98,10 +98,10 @@ class NNAUser(CustomUser):
     mentors = models.ManyToManyField('StaffUser', blank=True, related_name='mentors')
     therapist = models.ForeignKey('StaffUser', on_delete=models.PROTECT, blank=True, null=True)
     autonomy_level = models.IntegerField(default=1, validators=[MaxValueValidator(10), MinValueValidator(1)])
-    is_tutor = models.BooleanField(default=False)
-    entered_at = models.DateField()
+    tutor = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
+    entered_at = models.DateField(null=True, blank=True)
 
-    REQUIRED_FIELDS = ['name', 'surname', 'password', 'date_of_birth', 'home', 'status', 'gender']
+    REQUIRED_FIELDS = ['name', 'surname', 'password', 'date_of_birth', 'home', 'gender']
 
 
 class StaffUser(CustomUser):
