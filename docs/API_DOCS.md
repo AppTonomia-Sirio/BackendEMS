@@ -261,6 +261,10 @@ The available filters are:
 "educators",
 "therapist",
 "development_level",
+"performance",
+"avatar",
+"description",
+"is_autonomy_tutor",
 "autonomy_tutor",
 "entered_at"
 ```

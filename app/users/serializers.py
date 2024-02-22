@@ -1,4 +1,4 @@
-from .models import CustomUser, Home, Role, NNAUser, StaffUser
+from .models import *
 from rest_framework import serializers
 from rest_polymorphic.serializers import PolymorphicSerializer
 
@@ -159,3 +159,9 @@ class RoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Role
         fields = ("id", "name")
+
+class AvatarSerializer(serializers.ModelSerializer):
+    # Serializer for Avatar model
+    class Meta:
+        model = Avatar
+        fields = ("id")
