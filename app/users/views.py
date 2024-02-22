@@ -24,10 +24,10 @@ class NNAListCreateView(generics.ListCreateAPIView):
                         "home",
                         "status",
                         "gender",
-                        "mentors",
+                        "educators",
                         "therapist",
-                        "autonomy_level",
-                        "tutor",
+                        "development_level",
+                        "autonomy_tutor",
                         "entered_at",
                         )
 

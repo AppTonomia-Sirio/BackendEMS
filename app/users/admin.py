@@ -10,22 +10,22 @@ class NNAAdmin(UserAdmin):
     # Custom admin for NNAUser model
     model = NNAUser
 
-    list_display = ('email', 'id', 'name', 'surname', 'document', 'date_of_birth', 'home', 'status', 'created_at')
-    list_filter = ('status', 'date_of_birth', 'home', 'created_at')
-    search_fields = ('email', 'id', 'email', 'name', 'surname', 'document', 'date_of_birth', 'home', 'status',
+    list_display = ('email', 'id', 'name', 'surname', 'document', 'date_of_birth', 'home', 'status', 'is_autonomy_tutor', 'description', 'created_at')
+    list_filter = ('status', 'date_of_birth', 'home', 'is_autonomy_tutor', 'created_at')
+    search_fields = ('email', 'id', 'email', 'name', 'surname', 'document', 'date_of_birth', 'home', 'status', 'is_autonomy_tutor', 'description',
                      'created_at')
     ordering = ('name', 'email')
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         ('Personal info', {'fields': ('name', 'surname', 'gender', 'document', 'date_of_birth',
-                       'entered_at', 'therapist', 'mentors', 'home', 'status', 'autonomy_level', 'is_tutor')}),
+                       'entered_at', 'therapist', 'educators', 'home', 'status', 'development_level', 'is_tutor', 'is_autonomy_tutor', 'description')}),
     )
 
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
             'fields': ('email', 'password1', 'password2', 'name', 'surname', 'gender', 'document', 'date_of_birth',
-                       'entered_at', 'therapist', 'mentors', 'home', 'status', 'autonomy_level', 'is_tutor'),
+                       'entered_at', 'therapist', 'educators', 'home', 'status', 'development_level', 'is_tutor', 'is_autonomy_tutor', 'description'),
         }),
     )
 

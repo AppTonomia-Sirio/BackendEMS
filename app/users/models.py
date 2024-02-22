@@ -96,7 +96,7 @@ class NNAUser(CustomUser):
     home = models.ForeignKey('Home', on_delete=models.PROTECT)
     status = models.CharField(max_length=255, choices=STATUS_CHOICES, default='Pending')
     gender = models.CharField(max_length=255, choices=GENDER_CHOICES, default='Undefined')
-    educators = models.ManyToManyField('StaffUser', blank=True, related_name='mentors')
+    educators = models.ManyToManyField('StaffUser', blank=True, related_name='educators')
     therapist = models.ForeignKey('StaffUser', on_delete=models.PROTECT, blank=True, null=True)
     development_level = models.IntegerField(default=1, validators=[MaxValueValidator(5), MinValueValidator(0)])
     performance = models.IntegerField(default=1, validators=[MaxValueValidator(10), MinValueValidator(0)])

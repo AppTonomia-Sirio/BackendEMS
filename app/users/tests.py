@@ -10,7 +10,7 @@ class UserTests(APITestCase):
     def setUp(self):
         self.client = APIClient()
         self.uri = "/users/"
-        self.role_tutor = Role.objects.get(name="Educador Tutor")
+        self.role_tutor = Role.objects.get(name="Educador autonomy_tutor")
         self.role_therapist = Role.objects.get(name="Terapeuta")
         self.role_social_worker = Role.objects.get(name="Trabajador Social")
         self.home = Home.objects.create(name="Home1", address="Address1")
@@ -81,6 +81,7 @@ class UserTests(APITestCase):
                                                     "date_of_birth":"2016-03-03",
                                                     "home":self.home.id,
                                                     "gender":"Other",
+                                                    "document":"03298486234873253295732648731625871569326580291740917509",
                                                     "entered_at":"2020-03-03"},
                                                     format="json")
         self.assertEqual(response.status_code, 201)

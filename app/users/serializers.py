@@ -56,10 +56,12 @@ class NNAUserSerializer(serializers.ModelSerializer):
             "home",
             "status",
             "gender",
-            "mentors",
+            "educators",
             "therapist",
-            "autonomy_level",
-            "tutor",
+            "development_level",
+            "performance",
+            "is_autonomy_tutor",
+            "autonomy_tutor",
             "entered_at",
         )
         extra_kwargs = {
