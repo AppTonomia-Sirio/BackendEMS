@@ -10,7 +10,7 @@ class UserTests(APITestCase):
     def setUp(self):
         self.client = APIClient()
         self.uri = "/users/"
-        self.role_tutor = Role.objects.get(name="Educador autonomy_tutor")
+        self.role_tutor = Role.objects.get(name="Educador Tutor")
         self.role_therapist = Role.objects.get(name="Terapeuta")
         self.role_social_worker = Role.objects.get(name="Trabajador Social")
         self.home = Home.objects.create(name="Home1", address="Address1")
