@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group
 from rest_framework.authtoken.models import TokenProxy
 
-from .models import NNAUser, StaffUser, Home, Role
+from .models import *
 
 
 class NNAAdmin(UserAdmin):
@@ -76,11 +76,18 @@ class HomeAdmin(admin.ModelAdmin):
     search_fields = ('id', 'name', 'address')
     ordering = ('id',)
 
+class AvatarAdmin(admin.ModelAdmin):
+    # Custom admin for Avatar model
+    model = Avatar
+    list_display = ('id',)
+    search_fields = ('id',)
+    ordering = ('id',)
 
 admin.site.register(NNAUser, NNAAdmin)
 admin.site.register(StaffUser, StaffAdmin)
 admin.site.register(Role, RoleAdmin)
 admin.site.register(Home, HomeAdmin)
+admin.site.register(Avatar, AvatarAdmin)
 admin.site.unregister(Group)
 admin.site.unregister(TokenProxy)
 admin.site.site_header = 'Sirio App Administration'

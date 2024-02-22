@@ -103,6 +103,7 @@ class NNAUser(CustomUser):
     autonomy_tutor = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
     is_autonomy_tutor = models.BooleanField(default=False)
     description = models.TextField(max_length=255, blank=True, null=True)
+    avatar = models.OneToOneField('Avatar', on_delete=models.SET_NULL, blank=True, null=True)
     entered_at = models.DateField(null=True, blank=True)
 
     REQUIRED_FIELDS = ['name', 'surname', 'password', 'date_of_birth', 'home', 'gender', 'document']
@@ -119,6 +120,12 @@ class StaffUser(CustomUser):
 
     REQUIRED_FIELDS = ['name', 'surname', 'password', 'homes', "roles", "is_admin"]
 
+class Avatar(models.Model):
+    class Meta:
+        verbose_name = 'Avatar'
+        verbose_name_plural = 'Avatars'
+    
+    id = models.AutoField(primary_key=True)
 
 class Home(models.Model):
     # Location model

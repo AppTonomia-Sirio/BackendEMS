@@ -158,10 +158,10 @@ class RoleSerializer(serializers.ModelSerializer):
     # Serializer for Role model
     class Meta:
         model = Role
-        fields = ("id", "name")
+        fields = ("id", "name",)
 
 class AvatarSerializer(serializers.ModelSerializer):
     # Serializer for Avatar model
     class Meta:
         model = Avatar
-        fields = ("id")
+        fields = ("id",)

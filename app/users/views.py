@@ -27,6 +27,10 @@ class NNAListCreateView(generics.ListCreateAPIView):
                         "educators",
                         "therapist",
                         "development_level",
+                        "performance",
+                        "avatar",
+                        "description",
+                        "is_autonomy_tutor",
                         "autonomy_tutor",
                         "entered_at",
                         )
@@ -86,12 +90,26 @@ class RoleListView(generics.ListAPIView):
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
 
+class AvatarListView(generics.ListAPIView):
+    """Lists all avatars"""
 
-# Home and Role data
+    permission_classes = ()
+    authentication_classes = ()
+    queryset = Avatar.objects.all()
+    serializer_class = AvatarSerializer
 
+
+#Minor models data
+class AvatarView(generics.RetrieveAPIView):
+    """Retrieves an Avatar"""
+    permission_classes=()
+    authentication_classes = ()
+    queryset = Avatar.objects.all()
+    serializer_class = AvatarSerializer
+    lookup_field = "id"
 
 class HomeView(generics.RetrieveAPIView):
-    """Retrieves, updates or deletes a home"""
+    """Retrieves a home"""
 
     permission_classes = ()
     authentication_classes = ()
@@ -101,7 +119,7 @@ class HomeView(generics.RetrieveAPIView):
 
 
 class RoleView(generics.RetrieveAPIView):
-    """Retrieves, updates or deletes a role"""
+    """Retrieves a role"""
 
     permission_classes = ()
     authentication_classes = ()
