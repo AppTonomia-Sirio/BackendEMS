@@ -1,9 +1,11 @@
+from typing import Any
 from django.core.exceptions import ValidationError
 from django.core.validators import BaseValidator
+from django.utils.translation import gettext_lazy as _
 
 
 class PasswordValidator(BaseValidator):
-    message = 'Password is not valid'
+    message = _('Password is not valid')
     code = 'invalid'
 
     def __init__(self, password=None):

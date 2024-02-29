@@ -1,5 +1,5 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from .validators import PasswordValidator
+from .validators import *
 from django.core.validators import MaxValueValidator, MinValueValidator
 from rest_framework.authtoken.models import Token
 from django.db import models
@@ -97,7 +97,8 @@ class NNAUser(CustomUser):
     status = models.CharField(max_length=255, choices=STATUS_CHOICES, default='Pending')
     gender = models.CharField(max_length=255, choices=GENDER_CHOICES, default='Undefined')
     educators = models.ManyToManyField('StaffUser', blank=True, related_name='educators')
-    therapist = models.ForeignKey('StaffUser', on_delete=models.PROTECT, blank=True, null=True)
+    main_educator = models.ForeignKey('StaffUser', blank=True, null = True, on_delete = models.SET_NULL, related_name="main_educator")
+    therapist = models.ForeignKey('StaffUser', on_delete=models.PROTECT, blank=True, null=True, related_name="therapist")
     development_level = models.IntegerField(default=1, validators=[MaxValueValidator(5), MinValueValidator(0)])
     performance = models.IntegerField(default=1, validators=[MaxValueValidator(10), MinValueValidator(0)])
     autonomy_tutor = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
