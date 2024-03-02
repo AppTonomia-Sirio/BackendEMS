@@ -1,4 +1,4 @@
-from .models import CustomUser, Home, Role, NNAUser, StaffUser
+from .models import *
 from rest_framework import serializers
 from rest_polymorphic.serializers import PolymorphicSerializer
 
@@ -50,16 +50,20 @@ class NNAUserSerializer(serializers.ModelSerializer):
             "name",
             "surname",
             "password",
+            "avatar",
             "created_at",
             "document",
             "date_of_birth",
             "home",
             "status",
             "gender",
-            "mentors",
+            "educators",
+            "main_educator",
             "therapist",
-            "autonomy_level",
-            "tutor",
+            "development_level",
+            "performance",
+            "is_autonomy_tutor",
+            "autonomy_tutor",
             "entered_at",
         )
         extra_kwargs = {
@@ -84,7 +88,7 @@ class NNAUserSerializer(serializers.ModelSerializer):
                 document=validated_data["document"],
                 date_of_birth=validated_data["date_of_birth"],
                 home=validated_data["home"],
-                gender=validated_data["gender"]
+                gender=validated_data["gender"],
             )
             user.set_password(validated_data["password"])
             user.save()
@@ -124,7 +128,7 @@ class StaffUserSerializer(serializers.ModelSerializer):
             email=validated_data["email"],
             name=validated_data["name"],
             surname=validated_data["surname"],
-            is_admin=validated_data["is_admin"]
+            is_admin=validated_data["is_admin"],
         )
         user.set_password(validated_data["password"])
         user.save()
@@ -156,4 +160,14 @@ class RoleSerializer(serializers.ModelSerializer):
     # Serializer for Role model
     class Meta:
         model = Role
-        fields = ("id", "name")
+        fields = (
+            "id",
+            "name",
+        )
+
+
+class AvatarSerializer(serializers.ModelSerializer):
+    # Serializer for Avatar model
+    class Meta:
+        model = Avatar
+        fields = ("id",)

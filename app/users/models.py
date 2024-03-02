@@ -1,5 +1,5 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from .validators import PasswordValidator
+from .validators import *
 from django.core.validators import MaxValueValidator, MinValueValidator
 from rest_framework.authtoken.models import Token
 from django.db import models
@@ -81,7 +81,8 @@ class NNAUser(CustomUser):
         ('Active', 'Active'),
         ('Pending', 'Pending'),
         ('Frozen', 'Frozen'),
-        ('Locked', 'Locked')
+        ('Locked', 'Locked'),
+        ('Suspended', 'Suspended')
     )
     GENDER_CHOICES = (
         ('Male', 'Male'),
@@ -90,18 +91,23 @@ class NNAUser(CustomUser):
         ('Undefined', 'Undefined')
     )
 
-    document = models.CharField(max_length=255, blank=True, null=True)
+    document = models.CharField(max_length=255, unique=True)
     date_of_birth = models.DateField()
     home = models.ForeignKey('Home', on_delete=models.PROTECT)
     status = models.CharField(max_length=255, choices=STATUS_CHOICES, default='Pending')
     gender = models.CharField(max_length=255, choices=GENDER_CHOICES, default='Undefined')
-    mentors = models.ManyToManyField('StaffUser', blank=True, related_name='mentors')
-    therapist = models.ForeignKey('StaffUser', on_delete=models.PROTECT, blank=True, null=True)
-    autonomy_level = models.IntegerField(default=1, validators=[MaxValueValidator(10), MinValueValidator(1)])
-    tutor = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
+    educators = models.ManyToManyField('StaffUser', blank=True, related_name='educators')
+    main_educator = models.ForeignKey('StaffUser', blank=True, null = True, on_delete = models.SET_NULL, related_name="main_educator")
+    therapist = models.ForeignKey('StaffUser', on_delete=models.PROTECT, blank=True, null=True, related_name="therapist")
+    development_level = models.IntegerField(default=1, validators=[MaxValueValidator(5), MinValueValidator(0)])
+    performance = models.IntegerField(default=1, validators=[MaxValueValidator(10), MinValueValidator(0)])
+    autonomy_tutor = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
+    is_autonomy_tutor = models.BooleanField(default=False)
+    description = models.TextField(max_length=255, blank=True, null=True)
+    avatar = models.OneToOneField('Avatar', on_delete=models.SET_NULL, blank=True, null=True)
     entered_at = models.DateField(null=True, blank=True)
 
-    REQUIRED_FIELDS = ['name', 'surname', 'password', 'date_of_birth', 'home', 'gender']
+    REQUIRED_FIELDS = ['name', 'surname', 'password', 'date_of_birth', 'home', 'gender', 'document']
 
 
 class StaffUser(CustomUser):
@@ -115,6 +121,12 @@ class StaffUser(CustomUser):
 
     REQUIRED_FIELDS = ['name', 'surname', 'password', 'homes', "roles", "is_admin"]
 
+class Avatar(models.Model):
+    class Meta:
+        verbose_name = 'Avatar'
+        verbose_name_plural = 'Avatars'
+    
+    id = models.AutoField(primary_key=True)
 
 class Home(models.Model):
     # Location model

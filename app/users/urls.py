@@ -12,5 +12,7 @@ urlpatterns = [
     path("staff/", StaffListCreateView.as_view()),
     path('nna/<int:id>/', NNADetailView.as_view()),
     path('staff/<int:id>/', StaffDetailView.as_view()),
+    path('avatars/', AvatarListView.as_view()),
+    path('avatars/<int:id>', AvatarView.as_view()),
     path('login/', views.obtain_auth_token)
 ]

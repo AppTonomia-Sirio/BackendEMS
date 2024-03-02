@@ -2,7 +2,7 @@ from rest_framework.test import APITestCase
 from rest_framework.test import APIClient
 from .views import *
 from django.contrib.auth.hashers import make_password
-from .models import CustomUser, Home, Role
+from .models import *
 from rest_framework.authtoken.models import Token
 
 
@@ -41,6 +41,8 @@ class UserTests(APITestCase):
         self.staff.save()
         self.staff.roles.add(self.role_social_worker)
         self.staff.save()
+
+        self.avatar = Avatar.objects.create()
 
         self.token = Token.objects.get(user=self.user)
 
@@ -81,6 +83,7 @@ class UserTests(APITestCase):
                                                     "date_of_birth":"2016-03-03",
                                                     "home":self.home.id,
                                                     "gender":"Other",
+                                                    "document":"03298486234873253295732648731625871569326580291740917509",
                                                     "entered_at":"2020-03-03"},
                                                     format="json")
         self.assertEqual(response.status_code, 201)
@@ -111,6 +114,18 @@ class UserTests(APITestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["name"], self.nna.name)
+    
+    def test_avatar_list(self):
+        response = self.client.get(self.uri + "avatars/", format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data[0]["id"], self.avatar.id)
+
+    def test_get_avatar(self):
+        response = self.client.get(
+            self.uri + "avatars/" + str(self.avatar.id), format="json"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["id"], self.avatar.id)
 
     """def test_login_success(self):
         data = {"email": "email@test.com", "password": "test"}
