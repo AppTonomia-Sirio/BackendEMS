@@ -1,6 +1,7 @@
 from .models import *
 from rest_framework import serializers
 from rest_polymorphic.serializers import PolymorphicSerializer
+from django.utils.translation import gettext as _
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -27,7 +28,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
         for field in required_fields:
             if not validated_data.get(field):
-                errors[field] = "This field is required"
+                errors[field] = _("This field is required")
         if errors:
             raise serializers.ValidationError(errors)
 
@@ -77,7 +78,7 @@ class NNAUserSerializer(serializers.ModelSerializer):
 
             for field in required_fields:
                 if not validated_data.get(field):
-                    errors[field] = "This field is required"
+                    errors[field] = _("This field is required")
             if errors:
                 raise serializers.ValidationError(errors)
 
@@ -120,7 +121,7 @@ class StaffUserSerializer(serializers.ModelSerializer):
 
         for field in required_fields:
             if not validated_data.get(field):
-                errors[field] = "This field is required"
+                errors[field] = _("This field is required")
         if errors:
             raise serializers.ValidationError(errors)
 
