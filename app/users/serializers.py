@@ -50,6 +50,7 @@ class NNAUserSerializer(serializers.ModelSerializer):
             "name",
             "surname",
             "password",
+            "avatar",
             "created_at",
             "document",
             "date_of_birth",
@@ -57,6 +58,7 @@ class NNAUserSerializer(serializers.ModelSerializer):
             "status",
             "gender",
             "educators",
+            "main_educator",
             "therapist",
             "development_level",
             "performance",
@@ -86,7 +88,7 @@ class NNAUserSerializer(serializers.ModelSerializer):
                 document=validated_data["document"],
                 date_of_birth=validated_data["date_of_birth"],
                 home=validated_data["home"],
-                gender=validated_data["gender"]
+                gender=validated_data["gender"],
             )
             user.set_password(validated_data["password"])
             user.save()
@@ -126,7 +128,7 @@ class StaffUserSerializer(serializers.ModelSerializer):
             email=validated_data["email"],
             name=validated_data["name"],
             surname=validated_data["surname"],
-            is_admin=validated_data["is_admin"]
+            is_admin=validated_data["is_admin"],
         )
         user.set_password(validated_data["password"])
         user.save()
@@ -158,7 +160,11 @@ class RoleSerializer(serializers.ModelSerializer):
     # Serializer for Role model
     class Meta:
         model = Role
-        fields = ("id", "name",)
+        fields = (
+            "id",
+            "name",
+        )
+
 
 class AvatarSerializer(serializers.ModelSerializer):
     # Serializer for Avatar model
