@@ -101,7 +101,7 @@ Let's create a new Staff user. To do that, we need to send a `POST` request to `
 ```
 The `is_admin` field is a boolean determining the admin status of the user.
 
-The `roles` field is an array of the IDs of the roles this user is going to be asigned to.
+The `roles` field is an array of the IDs of the roles this user is going to be assigned to.
 
 The `homes` field is an array of the IDs of the homes the user is going to be assigned to.
 
@@ -112,6 +112,10 @@ The `email` field is a string containing the email of the user.
 The `name` field is a string containing the name of the user. 
 
 The `surname` field is a string containing the surname of the user.
+
+Default values:
+- If roles contains `Educador Tutor` the user will have is_admin as True by default.
+- If roles contains `Trabajador Social` the user will have all homes assigned by default.
 
 The response will be:
 ```json
