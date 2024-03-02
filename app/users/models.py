@@ -155,17 +155,14 @@ class StaffUser(CustomUser):
     roles = models.ManyToManyField("Role")
     is_admin = models.BooleanField(default=False)
 
-    REQUIRED_FIELDS = ["name", "surname", "password", "homes", "roles", "is_admin"]
+    REQUIRED_FIELDS = ["name", "surname", "password", "roles"]
 
-    def save(self, *args, **kwargs):
-        """Set defaults only on first creation"""
-        is_new = self.pk is None
-        if is_new:
-            if self.roles.contains(Role.objects.get(name="Trabajador Social")):
-                self.homes.set(Home.objects.all())
-            if self.roles.contains(Role.objects.get(name="Educador Tutor")):
-                self.is_admin = True
-        super().save(*args, **kwargs)
+    def clean(self):
+        """Set defaults"""
+        if self.roles.contains(Role.objects.get(name="Trabajador Social")):
+            self.homes.set(Home.objects.all())
+        if self.roles.contains(Role.objects.get(name="Educador Tutor")):
+            self.is_admin = True
 
 
 class Avatar(models.Model):

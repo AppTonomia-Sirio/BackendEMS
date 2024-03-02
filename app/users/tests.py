@@ -14,6 +14,7 @@ class UserTests(APITestCase):
         self.role_therapist = Role.objects.get(name="Terapeuta")
         self.role_social_worker = Role.objects.get(name="Trabajador Social")
         self.home = Home.objects.create(name="Home1", address="Address1")
+        self.home2 = Home.objects.create(name="Home2", address="Address2")
 
         self.user = CustomUser.objects.create(
             name="Test",
@@ -73,34 +74,62 @@ class UserTests(APITestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["name"], self.role_tutor.name)
-    
+
     def test_create_NNA(self):
-        response =self.client.post(self.uri+"nna/", {
-                                                    "email":"b@b.com",
-                                                    "name":"b",
-                                                    "surname":"b",
-                                                    "password":"1234",
-                                                    "date_of_birth":"2016-03-03",
-                                                    "home":self.home.id,
-                                                    "gender":"Other",
-                                                    "document":"03298486234873253295732648731625871569326580291740917509",
-                                                    "entered_at":"2020-03-03"},
-                                                    format="json")
+        response = self.client.post(
+            self.uri + "nna/",
+            {
+                "email": "b@b.com",
+                "name": "b",
+                "surname": "b",
+                "password": "1234",
+                "date_of_birth": "2016-03-03",
+                "home": self.home.id,
+                "gender": "Other",
+                "document": "03298486234873253295732648731625871569326580291740917509",
+                "entered_at": "2020-03-03",
+            },
+            format="json",
+        )
         self.assertEqual(response.status_code, 201)
 
     def test_create_Staff(self):
-        response =self.client.post(self.uri+"staff/", {
-                                                    "email":"d@d.com",
-                                                    "name":"b",
-                                                    "surname":"b",
-                                                    "password":"1234",
-                                                    "homes":[self.home.id],
-                                                    "roles":[self.role_tutor.id],
-                                                    "is_admin":"True"
-                                                    },
-                                                    format="json")
+        response = self.client.post(
+            self.uri + "staff/",
+            {
+                "email": "d@d.com",
+                "name": "b",
+                "surname": "b",
+                "password": "1234",
+                "homes": [self.home.id],
+                "roles": [self.role_tutor.id],
+                "is_admin": "True",
+            },
+            format="json",
+        )
         self.assertEqual(response.status_code, 201)
-    
+
+    def test_create_Staff_defaults(self):
+        response = self.client.post(
+            self.uri + "staff/",
+            {
+                "email": "d@d.com",
+                "name": "b",
+                "surname": "b",
+                "password": "1234",
+                "homes": [self.home.id],
+                "roles": [self.role_tutor.id, self.role_social_worker.id],
+                "is_admin": "False",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(
+            (self.home.id) in response.data["homes"]
+            and (self.home2.id) in response.data["homes"]
+        )
+        self.assertTrue(response.data["is_admin"])
+
     def test_get_staff(self):
         response = self.client.get(
             self.uri + "staff/" + str(self.staff.id) + "/", format="json"
@@ -114,7 +143,7 @@ class UserTests(APITestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["name"], self.nna.name)
-    
+
     def test_avatar_list(self):
         response = self.client.get(self.uri + "avatars/", format="json")
         self.assertEqual(response.status_code, 200)

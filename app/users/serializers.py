@@ -134,10 +134,10 @@ class StaffUserSerializer(serializers.ModelSerializer):
         user.save()
         for role in validated_data["roles"]:
             user.roles.add(role)
-            user.save()
         for home in validated_data["homes"]:
             user.homes.add(home)
-            user.save()
+        user.full_clean()
+        user.save()
         return user
 
 
