@@ -18,7 +18,8 @@ class NNAAdmin(UserAdmin):
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         ('Personal info', {'fields': ('name', 'surname', 'gender', 'document', 'date_of_birth',
-                       'entered_at', 'therapist', 'mentors', 'home', 'status', 'autonomy_level', 'is_tutor')}),
+                                      'entered_at', 'therapist', 'mentors', 'home', 'status',
+                                      'autonomy_level', 'is_tutor')}),
     )
 
     add_fieldsets = (

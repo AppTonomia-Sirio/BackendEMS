@@ -9,14 +9,14 @@ class NNAListCreatePermission(permissions.BasePermission):
     #   "mentors", "therapist", "autonomy_level", "tutor", "entered_at", "created_at", "status"
 
     def has_permission(self, request, view):
-        if request.user.is_superuser:
+        if request.user.is_superuser or request.user.is_staff:
             return True
 
         if request.method != 'POST':
             return request.user.is_authenticated
 
         forbidden_fields = ["mentors", "therapist", "autonomy_level", "tutor", "entered_at", "created_at", "status"]
-        if any(field in request.data for field in forbidden_fields):
+        if any(field in request.data for field in forbidden_fields) or request.user.is_authenticated:
             return False
 
         return True
@@ -25,9 +25,14 @@ class NNAListCreatePermission(permissions.BasePermission):
 class StaffListCreatePermission(permissions.BasePermission):
     """Permission to create new Staff users"""
 
-    # If the user is superuser - allow
+    # If the user is superuser - allow post
     # if not - deny
+    # To retrieve - user must be authenticated
     def has_permission(self, request, view):
+
+        if request.method == 'GET':
+            return request.user.is_authenticated
+
         return request.user.is_superuser
 
 
@@ -40,7 +45,7 @@ class NNADetailPermission(permissions.BasePermission):
     # Only user itself can be updated
     # Only superuser can delete
     def has_permission(self, request, view):
-        if request.user.is_superuser:
+        if request.user.is_superuser or request.user.is_staff:
             return True
 
         if request.method == 'DELETE':
