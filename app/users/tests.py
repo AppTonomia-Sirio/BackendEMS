@@ -2,7 +2,7 @@ from rest_framework.test import APITestCase
 from rest_framework.test import APIClient
 from .views import *
 from django.contrib.auth.hashers import make_password
-from .models import CustomUser, Home, Role
+from .models import *
 from rest_framework.authtoken.models import Token
 
 
@@ -46,6 +46,8 @@ class UserTests(APITestCase):
         self.staff.save()
         self.staff.roles.add(self.role_social_worker)
         self.staff.save()
+
+        self.avatar = Avatar.objects.create()
 
         self.token = Token.objects.get(user=self.user)
 

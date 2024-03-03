@@ -17,23 +17,26 @@ class NNAListCreateView(generics.ListCreateAPIView):
     serializer_class = NNAUserSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = (
-        "id",
-        "email",
-        "name",
-        "surname",
-        "created_at",
-        "document",
-        "date_of_birth",
-        "home",
-        "status",
-        "gender",
-        "mentors",
-        "therapist",
-        "autonomy_level",
-        "tutor",
-        "entered_at",
-    )
-
+                        "id",
+                        "email",
+                        "name",
+                        "surname",
+                        "created_at",
+                        "document",
+                        "date_of_birth",
+                        "home",
+                        "status",
+                        "gender",
+                        "educators",
+                        "therapist",
+                        "development_level",
+                        "performance",
+                        "avatar",
+                        "description",
+                        "is_autonomy_tutor",
+                        "autonomy_tutor",
+                        "entered_at",
+                        )
 
 class StaffListCreateView(generics.ListCreateAPIView):
     """Creates a new user"""
@@ -93,12 +96,26 @@ class RoleListView(generics.ListAPIView):
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
 
+class AvatarListView(generics.ListAPIView):
+    """Lists all avatars"""
 
-# Home and Role data
+    permission_classes = ()
+    authentication_classes = ()
+    queryset = Avatar.objects.all()
+    serializer_class = AvatarSerializer
 
+
+#Minor models data
+class AvatarView(generics.RetrieveAPIView):
+    """Retrieves an Avatar"""
+    permission_classes=()
+    authentication_classes = ()
+    queryset = Avatar.objects.all()
+    serializer_class = AvatarSerializer
+    lookup_field = "id"
 
 class HomeView(generics.RetrieveAPIView):
-    """Retrieves, updates or deletes a home"""
+    """Retrieves a home"""
 
     permission_classes = (IsSuperUserToModify,)
     authentication_classes = (TokenAuthentication,)
@@ -108,7 +125,7 @@ class HomeView(generics.RetrieveAPIView):
 
 
 class RoleView(generics.RetrieveAPIView):
-    """Retrieves, updates or deletes a role"""
+    """Retrieves a role"""
 
     permission_classes = (IsSuperUserToModify,)
     authentication_classes = (TokenAuthentication,)

@@ -52,7 +52,7 @@ The `home` field is the ID of the home the user is going to be assigned to.
 
 The `date_of_birth` field is a string in the format `YYYY-MM-DD`.
 
-The `document` field is a string containing the document number of the user. It is optional.
+The `document` field is a string containing the document number of the user.
 
 The `password` field is a string containing the password of the user.
 
@@ -75,10 +75,14 @@ The response will be:
     "home": "...",
     "status": "Pending",
     "gender": "...",
-    "mentors": [],
+    "educators": [],
+    "main_educator": null,
     "therapist": null,
-    "autonomy_level": 1,
-    "tutor": null,
+    "development_level": 1,
+    "performance": 1,
+    "is_autonomy_tutor": "...", 
+    "description":"...",
+    "autonomy_tutor": null,
     "entered_at": null
 }
 ```
@@ -164,10 +168,14 @@ To get the list of NNAs, we need to send a `GET` request to `/users/nna/`. The r
         "home": "...",
         "status": "...",
         "gender": "...",
-        "mentors": ["..."],
+        "educators": ["..."],
+        "main_educator": "...",
         "therapist": "...",
-        "autonomy_level": "...",
-        "tutor": "...",
+        "development_level": "...",
+        "performance":"...",
+        "is_autonomy_tutor": "...", 
+        "description":"...",
+        "autonomy_tutor": "...",
         "entered_at": "..."
     },
     {
@@ -181,10 +189,14 @@ To get the list of NNAs, we need to send a `GET` request to `/users/nna/`. The r
         "home": "...",
         "status": "...",
         "gender": "...",
-        "mentors": ["..."],
+        "educators": ["..."],
+        "main_educator": "...",
         "therapist": "...",
-        "autonomy_level": "...",
-        "tutor": "...",
+        "is_autonomy_tutor": "...", 
+        "performance":"...",
+        "description":"...",
+        "development_level": "...",
+        "autonomy_tutor": "...",
         "entered_at": "..."
     },
   ...
@@ -205,10 +217,14 @@ You can filter the list of NNAs by sending a `GET` request to `/users/nna/?<filt
         "home": "...",
         "status": "...",
         "gender": "...",
-        "mentors": ["..."],
+        "educators": ["..."],
+        "main_educator": "...",
         "therapist": "...",
-        "autonomy_level": "...",
-        "tutor": "...",
+        "development_level": "...",
+        "performance":"...",
+        "is_autonomy_tutor": "...", 
+        "description":"...",
+        "autonomy_tutor": "...",
         "entered_at": "..."
     },
     {
@@ -222,10 +238,14 @@ You can filter the list of NNAs by sending a `GET` request to `/users/nna/?<filt
         "home": "...",
         "status": "...",
         "gender": "...",
-        "mentors": ["..."],
+        "educators": ["..."],
+        "main_educator": "...",
         "therapist": "...",
-        "autonomy_level": "...",
-        "tutor": "...",
+        "development_level": "...",
+        "performance":"...",
+        "is_autonomy_tutor": "...", 
+        "description":"...",
+        "autonomy_tutor": "...",
         "entered_at": "..."
     },
   ...
@@ -243,10 +263,14 @@ The available filters are:
 "home",
 "status",
 "gender",
-"mentors",
+"educators",
 "therapist",
-"autonomy_level",
-"tutor",
+"development_level",
+"performance",
+"avatar",
+"description",
+"is_autonomy_tutor",
+"autonomy_tutor",
 "entered_at"
 ```
 
@@ -330,10 +354,14 @@ To get the details of a user, we need to send a `GET` request to `/users/nna/<id
     "home": "...",
     "status": "...",
     "gender": "...",
-    "mentors": ["..."],
+    "educators": ["..."],
+    "main_educator": "...",
     "therapist": "...",
-    "autonomy_level": "...",
-    "tutor": "...",
+    "development_level": "...",
+    "performance":"...",
+    "is_autonomy_tutor": "...", 
+    "description":"...",
+    "autonomy_tutor": "...",
     "entered_at": "..."
 }
 ```
@@ -349,10 +377,14 @@ To update the details of a user, we need to send a `PUT` request to `/users/nna/
     "home": "...",
     "status": "...",
     "gender": "...",
-    "mentors": ["..."],
+    "educators": ["..."],
+    "main_educator": "...",
     "therapist": "...",
-    "autonomy_level": "...",
-    "tutor": "...",
+    "development_level": "...",
+    "performance":"...",
+    "is_autonomy_tutor": "...", 
+    "description":"...",
+    "autonomy_tutor": "...",
     "entered_at": "..."
 }
 ```

@@ -3,30 +3,28 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group
 from rest_framework.authtoken.models import TokenProxy
 
-from .models import NNAUser, StaffUser, Home, Role
+from .models import *
 
 
 class NNAAdmin(UserAdmin):
     # Custom admin for NNAUser model
     model = NNAUser
 
-    list_display = ('email', 'id', 'name', 'surname', 'document', 'date_of_birth', 'home', 'status', 'created_at')
-    list_filter = ('status', 'date_of_birth', 'home', 'created_at')
-    search_fields = ('email', 'id', 'email', 'name', 'surname', 'document', 'date_of_birth', 'home', 'status',
+    list_display = ('email', 'id', 'name', 'surname', 'document', 'date_of_birth', 'home', 'status', 'is_autonomy_tutor', 'description', 'created_at')
+    list_filter = ('status', 'date_of_birth', 'home', 'is_autonomy_tutor', 'created_at')
+    search_fields = ('email', 'id', 'email', 'name', 'surname', 'document', 'date_of_birth', 'home', 'status', 'is_autonomy_tutor', 'description',
                      'created_at')
     ordering = ('name', 'email')
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal info', {'fields': ('name', 'surname', 'gender', 'document', 'date_of_birth',
-                                      'entered_at', 'therapist', 'mentors', 'home', 'status',
-                                      'autonomy_level', 'is_tutor')}),
+        ('Personal info', {'fields': ('name', 'surname', 'gender', 'document', 'date_of_birth', 'entered_at', 'therapist', 'educators', 'home', 'status', 'development_level', 'is_autonomy_tutor', 'description')}),
     )
 
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
             'fields': ('email', 'password1', 'password2', 'name', 'surname', 'gender', 'document', 'date_of_birth',
-                       'entered_at', 'therapist', 'mentors', 'home', 'status', 'autonomy_level', 'is_tutor'),
+                       'entered_at', 'therapist', 'educators', 'home', 'status', 'development_level', 'is_autonomy_tutor', 'description'),
         }),
     )
 
@@ -77,11 +75,18 @@ class HomeAdmin(admin.ModelAdmin):
     search_fields = ('id', 'name', 'address')
     ordering = ('id',)
 
+class AvatarAdmin(admin.ModelAdmin):
+    # Custom admin for Avatar model
+    model = Avatar
+    list_display = ('id',)
+    search_fields = ('id',)
+    ordering = ('id',)
 
 admin.site.register(NNAUser, NNAAdmin)
 admin.site.register(StaffUser, StaffAdmin)
 admin.site.register(Role, RoleAdmin)
 admin.site.register(Home, HomeAdmin)
+admin.site.register(Avatar, AvatarAdmin)
 admin.site.unregister(Group)
 admin.site.unregister(TokenProxy)
 admin.site.site_header = 'Sirio App Administration'
