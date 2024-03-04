@@ -17,8 +17,7 @@ class NNAAdmin(UserAdmin):
     ordering = ('name', 'email')
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal info', {'fields': ('name', 'surname', 'gender', 'document', 'date_of_birth',
-                       'entered_at', 'therapist', 'educators', 'home', 'status', 'development_level', 'is_autonomy_tutor', 'description')}),
+        ('Personal info', {'fields': ('name', 'surname', 'gender', 'document', 'date_of_birth', 'entered_at', 'therapist', 'educators', 'home', 'status', 'development_level', 'is_autonomy_tutor', 'description')}),
     )
 
     add_fieldsets = (
