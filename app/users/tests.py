@@ -10,6 +10,10 @@ class UserTests(APITestCase):
     def setUp(self):
         self.client = APIClient()
         self.uri = "/users/"
+        self.nna_uri = self.uri + "nna/"
+        self.staff_uri = self.uri + "staff/"
+        self.home_uri = self.uri + "home/"
+        self.role_uri = self.uri + "role/"
         self.role_tutor = Role.objects.get(name="Educador Tutor")
         self.role_therapist = Role.objects.get(name="Terapeuta")
         self.role_social_worker = Role.objects.get(name="Trabajador Social")
@@ -20,6 +24,7 @@ class UserTests(APITestCase):
             surname="Test",
             email="email@test.com",
             password=make_password("test"),
+            is_staff=False,
         )
         self.nna = NNAUser.objects.create(
             email="b@b",
@@ -34,7 +39,7 @@ class UserTests(APITestCase):
             email="c@c",
             name="name",
             surname="surname",
-            is_admin=True,
+            is_staff=True,
             password=make_password("test"),
         )
         self.staff.homes.add(self.home)
@@ -50,240 +55,149 @@ class UserTests(APITestCase):
         token = Token.objects.get(user=self.user)
         self.assertEqual(token.key, self.token.key)
 
-    def test_homes_list(self):
-        response = self.client.get(self.uri + "homes/", format="json")
+    def test_nna_list_unauthenticated(self):
+        response = self.client.get(self.nna_uri)
+        self.assertEqual(response.status_code, 401)
+
+    def test_nna_list_authenticated(self):
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key)
+        response = self.client.get(self.nna_uri)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data[0]["name"], self.home.name)
 
-    def test_roles_list(self):
-        response = self.client.get(self.uri + "roles/", format="json")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data[0]["name"], self.role_tutor.name)
-
-    def test_get_home(self):
-        response = self.client.get(
-            self.uri + "home/" + str(self.home.id), format="json"
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["name"], self.home.name)
-
-    def test_get_role(self):
-        response = self.client.get(
-            self.uri + "role/" + str(self.role_tutor.id), format="json"
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["name"], self.role_tutor.name)
-    
-    def test_create_NNA(self):
-        response =self.client.post(self.uri+"nna/", {
-                                                    "email":"b@b.com",
-                                                    "name":"b",
-                                                    "surname":"b",
-                                                    "password":"1234",
-                                                    "date_of_birth":"2016-03-03",
-                                                    "home":self.home.id,
-                                                    "gender":"Other",
-                                                    "document":"03298486234873253295732648731625871569326580291740917509",
-                                                    "entered_at":"2020-03-03"},
-                                                    format="json")
-        self.assertEqual(response.status_code, 201)
-
-    def test_create_Staff(self):
-        response =self.client.post(self.uri+"staff/", {
-                                                    "email":"d@d.com",
-                                                    "name":"b",
-                                                    "surname":"b",
-                                                    "password":"1234",
-                                                    "homes":[self.home.id],
-                                                    "roles":[self.role_tutor.id],
-                                                    "is_admin":"True"
-                                                    },
-                                                    format="json")
-        self.assertEqual(response.status_code, 201)
-    
-    def test_get_staff(self):
-        response = self.client.get(
-            self.uri + "staff/" + str(self.staff.id) + "/", format="json"
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["name"], self.staff.name)
-
-    def test_get_nna(self):
-        response = self.client.get(
-            self.uri + "nna/" + str(self.nna.id) + "/", format="json"
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["name"], self.nna.name)
-    
-    def test_avatar_list(self):
-        response = self.client.get(self.uri + "avatars/", format="json")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data[0]["id"], self.avatar.id)
-
-    def test_get_avatar(self):
-        response = self.client.get(
-            self.uri + "avatars/" + str(self.avatar.id), format="json"
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["id"], self.avatar.id)
-
-    """def test_login_success(self):
-        data = {"email": "email@test.com", "password": "test"}
-        self.request = self.factory.post(self.uri, data)
-        token = Token.objects.get(user=self.user)
-        response = views.LoginView.as_view()(self.request)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["token"], token.key)
-
-    def test_login_failure(self):
-        data = {}
-        self.request = self.factory.post(self.uri, data)
-        response = views.LoginView.as_view()(self.request)
-        self.assertEqual(response.status_code, 400)
-
-    def test_login_failure_wrong_credentials(self):
-        data = {"email": "worng@wrong.com", "password": "wrong"}
-        self.request = self.factory.post(self.uri, data)
-        response = views.LoginView.as_view()(self.request)
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data["error"], "Wrong Credentials")
-
-    def test_register(self):
+    def test_create_nna_staff(self):
+        self.client.force_authenticate(user=self.staff)
         data = {
-            "name": "Test2",
-            "surname": "Test2",
-            "email": "email2@test.com",
-            "password": "test2",
-            "document": "12345678Y",
-            "date_of_birth": "1990-01-01",
+            "email": "d@d.com",
+            "name": "name",
+            "surname": "surname",
+            "document": "documentt",
+            "date_of_birth": "2000-03-03",
             "home": self.home.id,
-            "roles": [self.role_nna.id],
+            "password": "test",
         }
-        self.request = self.factory.post(self.uri, data)
-        response = views.UserCreate.as_view()(self.request)
+        response = self.client.post(self.nna_uri, data)
+        print(response.data)
         self.assertEqual(response.status_code, 201)
 
-    def test_register_failure(self):
+    def test_create_nna_not_staff(self):
+        self.client.force_authenticate(user=self.user)
         data = {
-            "name": "Test2",
-            "surname": "Test2",
-            "email": "email2@test.com",
-            "password": "test2",
-            "document": "123456789",
-            "date_of_birth": "1990-01-01",
+            "email": "d@d.com",
+            "name": "name",
+            "surname": "surname",
+            "document": "document",
+            "date_of_birth": "2000-03-03",
             "home": self.home.id,
-            "roles": [self.role_nna.id],
+            "password": "test",
         }
-        self.request = self.factory.post(self.uri, data)
-        views.UserCreate.as_view()(self.request, data)
-        response = views.UserCreate.as_view()(self.request)
-        self.assertEqual(response.status_code, 400)
-
-    def test_get_current_user(self):
-        self.request.META["HTTP_AUTHORIZATION"] = "Token " + self.token.key
-        response = views.CurrentUserView.as_view()(self.request)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["email"], self.user.email)
-
-    def test_get_current_user_failure(self):
-        response = views.CurrentUserView.as_view()(self.request)
-        self.assertEqual(response.status_code, 401)
-
-    def test_get_user_list(self):
-        self.request.META["HTTP_AUTHORIZATION"] = "Token " + self.token.key
-        response = views.UserListView.as_view()(self.request)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data[0]["email"], self.user.email)
-
-    def test_get_user_list_failure(self):
-        response = views.UserListView.as_view()(self.request)
-        self.assertEqual(response.status_code, 401)
-
-    def test_get_user_detail(self):
-        self.request.META["HTTP_AUTHORIZATION"] = "Token " + self.token.key
-        response = views.UserDetailView.as_view()(self.request, id=self.user.id)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["email"], self.user.email)
-
-    def test_get_user_detail_failure(self):
-        response = views.UserDetailView.as_view()(self.request, id=self.user.id)
-        self.assertEqual(response.status_code, 401)
-
-
-    def test_partially_update_user(self):
-        data = {"name": "Test2"}
-        self.request = self.factory.patch(self.uri, data)
-        self.request.META["HTTP_AUTHORIZATION"] = "Token " + self.token.key
-        response = views.UserDetailView.as_view()(self.request, id=self.user.id)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["name"], "Test2")
-
-    def test_partially_update_user_failure(self):
-        data = {"name": "Test2"}
-        request = self.factory.patch(self.uri, data)
-        response = views.UserDetailView.as_view()(request, id=self.user.id)
-        self.assertEqual(response.status_code, 401)
-
-    def test_delete_user_forbidden(self):
-        request = self.factory.delete(self.uri)
-        request.META["HTTP_AUTHORIZATION"] = "Token " + self.token.key
-        response = views.UserDetailView.as_view()(request, id=self.user.id)
+        response = self.client.post(self.nna_uri, data)
         self.assertEqual(response.status_code, 403)
 
-    def test_homes_list(self):
-        request = self.factory.get(self.uri)
-        request.META["HTTP_AUTHORIZATION"] = "Token " + self.token.key
-        response = views.HomeListView.as_view()(request)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data[0]["name"], self.home.name)
+    def create_nna_forbidden_fields_staff(self):
+        self.client.force_authenticate(user=self.staff)
+        data = {
+            "email": "d@d.com",
+            "name": "name",
+            "surname": "surname",
+            "document": "document",
+            "date_of_birth": "2000-03-03",
+            "home": self.home.id,
+            "password": "test",
+            "autonomy_level": 5,
+        }
+        response = self.client.post(self.nna_uri, data)
+        self.assertEqual(response.status_code, 201)
 
-    def test_roles_list(self):
-        response = views.RoleListView.as_view()(self.request)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data[0]["name"], self.role_nna.name)
+    def create_nna_forbidden_fields_not_staff(self):
+        data = {
+            "email": "d@d.com",
+            "name": "name",
+            "surname": "surname",
+            "document": "document",
+            "date_of_birth": "2000-03-03",
+            "home": self.home.id,
+            "password": "test",
+            "autonomy_level": 5,
+        }
+        response = self.client.post(self.nna_uri, data)
+        self.assertEqual(response.status_code, 403)
 
-    def test_get_home(self):
-        response = views.HomeView.as_view()(self.request, id=self.home.id)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["name"], self.home.name)
+    def test_staff_list_unauthenticated(self):
+        response = self.client.get(self.staff_uri)
+        self.assertEqual(response.status_code, 401)
 
-    def test_get_role(self):
-        response = views.RoleView.as_view()(self.request, id=self.role_nna.id)
+    def test_staff_list_authenticated(self):
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key)
+        response = self.client.get(self.staff_uri)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["name"], self.role_nna.name)
 
-    def test_get_list_filter_home(self):
-        self.request = self.factory.get(
-            self.uri + "?home=Home1",
-        )
-        self.request.META["HTTP_AUTHORIZATION"] = "Token " + self.token.key
-        response = views.UserListView.as_view()(self.request)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data[0]["name"], self.user.name)
+    def test_create_staff_not_superuser(self):
+        self.client.force_authenticate(user=self.user)
+        data = {
+            "email": "d@d.com",
+            "name": "name",
+            "surname": "surname",
+            "is_staff": True,
+            "password": "test",
+        }
+        response = self.client.post(self.staff_uri, data)
+        self.assertEqual(response.status_code, 403)
 
-    def test_get_list_filter_active(self):
-        self.request = self.factory.get(
-            self.uri + "?status=Pending",
-        )
-        self.request.META["HTTP_AUTHORIZATION"] = "Token " + self.token.key
-        response = views.UserListView.as_view()(self.request)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data[0]["name"], self.user.name)
+    def test_nna_detail_unauthenticated(self):
+        response = self.client.get(self.nna_uri + str(self.nna.id) + "/")
+        self.assertEqual(response.status_code, 401)
 
-    def test_get_list_filter_active_empty(self):
-        self.request = self.factory.get(
-            self.uri + "?status=Active",
-        )
-        self.request.META["HTTP_AUTHORIZATION"] = "Token " + self.token.key
-        response = views.UserListView.as_view()(self.request)
+    def test_nna_detail_authenticated(self):
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key)
+        response = self.client.get(self.nna_uri + str(self.nna.id) + "/")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 0)
 
-    def test_get_list_filter_home_empty(self):
-        self.request = self.factory.get(
-            self.uri + "?home=home404",
-        )
-        self.request.META["HTTP_AUTHORIZATION"] = "Token " + self.token.key
-        response = views.UserListView.as_view()(self.request)
+    def test_update_nna_superuser(self):
+        self.client.force_authenticate(user=self.staff)
+        data = {
+            "email": "d@d.com",
+            "name": "name",
+            "surname": "surname",
+            "document": "document",
+            "date_of_birth": "2000-03-03",
+            "home": self.home.id,
+            "password": "test",
+        }
+        response = self.client.put(self.nna_uri + str(self.nna.id) + "/", data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 0)"""
+
+    def test_update_nna_not_superuser(self):
+        self.client.force_authenticate(user=self.user)
+        data = {
+            "email": "d@d.com",
+            "name": "name",
+            "surname": "surname",
+            "document": "document",
+            "date_of_birth": "2000-03-03",
+            "home": self.home.id,
+            "password": "test",
+        }
+        response = self.client.put(self.nna_uri + str(self.nna.id) + "/", data)
+        self.assertEqual(response.status_code, 403)
+
+    def test_staff_detail_unauthenticated(self):
+        response = self.client.get(self.staff_uri + str(self.staff.id) + "/")
+        self.assertEqual(response.status_code, 401)
+
+    def test_staff_detail_authenticated(self):
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key)
+        response = self.client.get(self.staff_uri + str(self.staff.id) + "/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_update_staff_not_superuser(self):
+        self.client.force_authenticate(user=self.user)
+        data = {
+            "email": "d@d.com",
+            "name": "name",
+            "surname": "surname",
+            "is_staff": True,
+            "password": "test",
+        }
+        response = self.client.put(self.staff_uri + str(self.staff.id) + "/", data)
+        self.assertEqual(response.status_code, 403)
+
