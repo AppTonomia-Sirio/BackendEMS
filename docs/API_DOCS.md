@@ -27,6 +27,7 @@
   - [Getting list of roles](#getting-list-of-roles)
   - [Getting role details](#getting-role-details)
 - [Not found](#not-found)
+- [Localization](#localization)
 
 
 # Authentication
@@ -503,6 +504,12 @@ If you try to access an endpoint that doesn't exist, you will get a `404` respon
     "error": "Not found"
 }
 ```
+# Localization
+
+You can change the language of the messages by adding a header `Accept-Language: <LANGUAGE-CODE>` to your request.
+Supported languages are:
+- English `en` (Default)
+- Spanish `es`
 
 
 

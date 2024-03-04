@@ -1,10 +1,10 @@
-# Backend
-#
-## Django backend for the AppTonomia Sirio application
-#
+# Backend <!-- omit in toc -->
+# <!-- omit in toc -->
+## Django backend for the AppTonomia Sirio application <!-- omit in toc -->
+# <!-- omit in toc -->
 ![Python](https://img.shields.io/badge/python-3.10.-blue) ![Django](https://img.shields.io/badge/Django-4.x-blue) ![Rest Framework](https://img.shields.io/badge/RestFramework-4.x-blue) ![License](https://img.shields.io/badge/license-GNU-green)
-#
-### Table of Contents
+# <!-- omit in toc -->
+### Table of Contents <!-- omit in toc -->
 - [About](#about)
 - [Development Guide](#development-guide)
 - [Installation](#installation)
@@ -64,6 +64,10 @@ python manage.py test
 9. Run the server
 ```
 python manage.py runserver
+```
+10. Compile the localization files
+```
+python manage.py compilemessages
 ```
 
 ### Usage
