@@ -70,12 +70,13 @@ class UserTests(APITestCase):
             "email": "d@d.com",
             "name": "name",
             "surname": "surname",
-            "document": "document",
+            "document": "documentt",
             "date_of_birth": "2000-03-03",
             "home": self.home.id,
             "password": "test",
         }
         response = self.client.post(self.nna_uri, data)
+        print(response.data)
         self.assertEqual(response.status_code, 201)
 
     def test_create_nna_not_staff(self):
