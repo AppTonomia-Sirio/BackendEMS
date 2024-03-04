@@ -101,16 +101,16 @@ class NNAAdmin(UserAdmin):
 class StaffAdmin(UserAdmin):
     # Custom admin for StaffUser model
     model = StaffUser
-    list_display = ("email", "id", "name", "surname", "is_admin")
-    list_filter = ("is_admin", "roles")
-    search_fields = ("email", "id", "name", "surname", "is_admin")
+    list_display = ("email", "id", "name", "surname", "is_staff")
+    list_filter = ("is_staff", "roles")
+    search_fields = ("email", "id", "name", "surname", "is_staff")
     ordering = ("email", "id")
 
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         (
             "Personal info",
-            {"fields": ("name", "surname", "homes", "roles", "is_admin")},
+            {"fields": ("name", "surname", "homes", "roles", "is_staff")},
         ),
     )
 
@@ -127,7 +127,7 @@ class StaffAdmin(UserAdmin):
                     "surname",
                     "homes",
                     "roles",
-                    "is_admin",
+                    "is_staff",
                 ),
             },
         ),
@@ -148,8 +148,8 @@ class StaffAdmin(UserAdmin):
             if form.cleaned_data["roles"].contains(
                 Role.objects.get(name="Educador Tutor")
             ):
-                form.cleaned_data["is_admin"] = True
-                obj.is_admin = True
+                form.cleaned_data["is_staff"] = True
+                obj.is_staff = True
         super().save_model(request, obj, form, change)
 
 

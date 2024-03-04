@@ -14,6 +14,8 @@ import os
 from pathlib import Path
 from warnings import warn
 from uuid import uuid1
+from django.utils.translation import gettext_lazy as _
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -48,8 +50,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "django_filters",
-    'polymorphic',
-    'rest_polymorphic',
+    "polymorphic",
+    "rest_polymorphic",
     # Local
     "users",
 ]
@@ -62,6 +64,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     # Local
     "config.middleware.NotFoundMiddleware",
     "config.middleware.InternalServerError",
@@ -122,7 +125,11 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "en"
+
+LANGUAGES = [("en", _("English")), ("es", _("Spanish"))]
+
+LOCALE_PATHS = (os.path.join(BASE_DIR, "locale"),)
 
 TIME_ZONE = "UTC"
 
@@ -153,5 +160,5 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
 }
 
-if 'WEBSITE_HOSTNAME' in os.environ: # Running on Azure
+if "WEBSITE_HOSTNAME" in os.environ:  # Running on Azure
     from .azure import *

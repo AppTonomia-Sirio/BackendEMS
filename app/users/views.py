@@ -1,16 +1,20 @@
 from rest_framework import generics
+from rest_framework.authentication import TokenAuthentication
+
 from .models import *
 from .serializers import *
 from django_filters import rest_framework as filters
+from .permissions import *
 
-# Create users views
+
+#  Create users views
 
 
 class NNAListCreateView(generics.ListCreateAPIView):
     """Creates a new user"""
 
-    authentication_classes = ()
-    permission_classes = ()
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (NNAListCreatePermission,)
     queryset = NNAUser.objects.all()  # TODO add filters
     serializer_class = NNAUserSerializer
     filter_backends = (filters.DjangoFilterBackend,)
@@ -40,8 +44,8 @@ class NNAListCreateView(generics.ListCreateAPIView):
 class StaffListView(generics.ListAPIView):
     """Creates a new user"""
 
-    authentication_classes = ()
-    permission_classes = ()
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (StaffListPermission,)
     queryset = StaffUser.objects.all()
     serializer_class = StaffUserSerializer
     filter_backends = (filters.DjangoFilterBackend,)
@@ -54,8 +58,11 @@ class StaffListView(generics.ListAPIView):
         "created_at",
         "homes",
         "roles",
-        "is_admin",
+        "is_staff",
     )
+
+
+# Users retrieve and edits
 
 
 # Users retrieve and edits
@@ -65,8 +72,8 @@ class NNADetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = NNAUser.objects.all()
     serializer_class = NNAUserSerializer
     lookup_field = "id"
-    authentication_classes = ()
-    permission_classes = ()
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (NNADetailPermission,)
 
 
 class StaffDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -75,8 +82,8 @@ class StaffDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = StaffUser.objects.all()
     serializer_class = StaffUserSerializer
     lookup_field = "id"
-    authentication_classes = ()
-    permission_classes = ()
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (StaffDetailPermission,)
 
 
 # Lists
@@ -84,7 +91,7 @@ class HomeListView(generics.ListAPIView):
     """Lists all homes"""
 
     permission_classes = ()
-    authentication_classes = ()
+    authentication_classes = (TokenAuthentication,)
     queryset = Home.objects.all()
     serializer_class = HomeSerializer
 
@@ -93,7 +100,7 @@ class RoleListView(generics.ListAPIView):
     """Lists all roles"""
 
     permission_classes = ()
-    authentication_classes = ()
+    authentication_classes = (TokenAuthentication,)
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
 
@@ -121,8 +128,8 @@ class AvatarView(generics.RetrieveAPIView):
 class HomeView(generics.RetrieveAPIView):
     """Retrieves a home"""
 
-    permission_classes = ()
-    authentication_classes = ()
+    permission_classes = (IsSuperUserToModify,)
+    authentication_classes = (TokenAuthentication,)
     queryset = Home.objects.all()
     serializer_class = HomeSerializer
     lookup_field = "id"
@@ -131,8 +138,8 @@ class HomeView(generics.RetrieveAPIView):
 class RoleView(generics.RetrieveAPIView):
     """Retrieves a role"""
 
-    permission_classes = ()
-    authentication_classes = ()
+    permission_classes = (IsSuperUserToModify,)
+    authentication_classes = (TokenAuthentication,)
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
     lookup_field = "id"

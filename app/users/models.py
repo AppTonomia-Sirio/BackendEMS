@@ -153,7 +153,6 @@ class StaffUser(CustomUser):
 
     homes = models.ManyToManyField("Home")
     roles = models.ManyToManyField("Role")
-    is_admin = models.BooleanField(default=False)
 
     REQUIRED_FIELDS = ["name", "surname", "password", "roles"]
 
