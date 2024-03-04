@@ -1,24 +1,18 @@
-# Backend
-#
-## Django backend for the AppTonomia Sirio application
-#
+# Backend <!-- omit in toc -->
+# <!-- omit in toc -->
+## Django backend for the AppTonomia Sirio application <!-- omit in toc -->
+# <!-- omit in toc -->
 ![Python](https://img.shields.io/badge/python-3.10.-blue) ![Django](https://img.shields.io/badge/Django-4.x-blue) ![Rest Framework](https://img.shields.io/badge/RestFramework-4.x-blue) ![License](https://img.shields.io/badge/license-GNU-green)
-#
-### Table of Contents
-- [Backend](#backend)
-- [](#)
-  - [Django backend for the AppTonomia Sirio application](#django-backend-for-the-apptonomia-sirio-application)
-- [](#-1)
-- [](#-2)
-    - [Table of Contents](#table-of-contents)
-    - [About](#about)
-    - [Development Guide](#development-guide)
-    - [Installation](#installation)
-    - [Usage](#usage)
-    - [License](#license)
-    - [Authors and Contributors](#authors-and-contributors)
-    - [Code of Conduct](#code-of-conduct)
-    - [Change Log](#change-log)
+# <!-- omit in toc -->
+### Table of Contents <!-- omit in toc -->
+- [About](#about)
+- [Development Guide](#development-guide)
+- [Installation](#installation)
+- [Usage](#usage)
+- [License](#license)
+- [Authors and Contributors](#authors-and-contributors)
+- [Code of Conduct](#code-of-conduct)
+- [Change Log](#change-log)
 
 ### About
 This is the backend for the AppTonomia Sirio application. It is a Django project that uses the Django Rest Framework to provide a REST API for the application.
