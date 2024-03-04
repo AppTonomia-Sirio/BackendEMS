@@ -12,28 +12,33 @@ class NNAListCreatePermission(permissions.BasePermission):
         if request.user.is_superuser or request.user.is_staff:
             return True
 
-        if request.method != 'POST':
+        if request.method != "POST":
             return request.user.is_authenticated
 
-        forbidden_fields = ["mentors", "therapist", "autonomy_level", "tutor", "entered_at", "created_at", "status"]
-        if any(field in request.data for field in forbidden_fields) or request.user.is_authenticated:
+        forbidden_fields = [
+            "mentors",
+            "therapist",
+            "autonomy_level",
+            "tutor",
+            "entered_at",
+            "created_at",
+            "status",
+        ]
+        if (
+            any(field in request.data for field in forbidden_fields)
+            or request.user.is_authenticated
+        ):
             return False
 
         return True
 
 
-class StaffListCreatePermission(permissions.BasePermission):
-    """Permission to create new Staff users"""
+class StaffListPermission(permissions.BasePermission):
+    """Permission to view Staff users"""
 
-    # If the user is superuser - allow post
-    # if not - deny
     # To retrieve - user must be authenticated
     def has_permission(self, request, view):
-
-        if request.method == 'GET':
-            return request.user.is_authenticated
-
-        return request.user.is_superuser
+        return request.user.is_authenticated
 
 
 class NNADetailPermission(permissions.BasePermission):
@@ -48,18 +53,26 @@ class NNADetailPermission(permissions.BasePermission):
         if request.user.is_superuser or request.user.is_staff:
             return True
 
-        if request.method == 'DELETE':
+        if request.method == "DELETE":
             return False
 
-        if request.method == 'GET':
+        if request.method == "GET":
             return request.user.is_authenticated
 
-        forbidden_fields = ["mentors", "therapist", "autonomy_level", "tutor", "entered_at", "created_at", "status"]
+        forbidden_fields = [
+            "mentors",
+            "therapist",
+            "autonomy_level",
+            "tutor",
+            "entered_at",
+            "created_at",
+            "status",
+        ]
         if any(field in request.data for field in forbidden_fields):
             return False
 
-        if request.method == 'PUT' or request.method == 'PATCH':
-            return request.user.id == view.kwargs['id']
+        if request.method == "PUT" or request.method == "PATCH":
+            return request.user.id == view.kwargs["id"]
 
         return False
 
@@ -74,7 +87,7 @@ class StaffDetailPermission(permissions.BasePermission):
         if request.user.is_superuser:
             return True
 
-        if request.method == 'GET':
+        if request.method == "GET":
             return request.user.is_authenticated
 
         return False
@@ -82,6 +95,7 @@ class StaffDetailPermission(permissions.BasePermission):
 
 class IsSuperUserToModify(permissions.BasePermission):
     """Permission to modify anything in the database"""
+
     # Only superuser can modify
     # To retrieve no authentication is required
 
@@ -89,8 +103,7 @@ class IsSuperUserToModify(permissions.BasePermission):
         if request.user.is_superuser:
             return True
 
-        if request.method != 'GET':
+        if request.method != "GET":
             return False
 
         return True
-

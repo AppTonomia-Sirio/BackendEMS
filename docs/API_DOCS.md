@@ -97,12 +97,12 @@ Let's create a new Staff user. To do that, we need to send a `POST` request to `
     "password": "...",
     "homes":["..."],
     "roles":["..."],
-    "is_admin":"..."
+    "is_staff":"..."
 }
 ```
-The `is_admin` field is a boolean determining the admin status of the user.
+The `is_staff` field is a boolean determining the admin status of the user.
 
-The `roles` field is an array of the IDs of the roles this user is going to be asigned to.
+The `roles` field is an array of the IDs of the roles this user is going to be assigned to.
 
 The `homes` field is an array of the IDs of the homes the user is going to be assigned to.
 
@@ -114,6 +114,10 @@ The `name` field is a string containing the name of the user.
 
 The `surname` field is a string containing the surname of the user.
 
+Default values:
+- If roles contains `Educador Tutor` the user will have is_staff as True by default.
+- If roles contains `Trabajador Social` the user will have all homes assigned by default.
+
 The response will be:
 ```json
 {
@@ -124,7 +128,7 @@ The response will be:
     "created_at": "...",
     "homes":["..."],
     "roles":["..."],
-    "is_admin":"..."
+    "is_staff":"..."
 }
 ```
 ## Logging in
@@ -287,7 +291,7 @@ To get the list of Staff, we need to send a `GET` request to `/users/staff/`. Th
         "created_at": "...",
         "homes":["..."],
         "roles":["..."],
-        "is_admin":"..."
+        "is_staff":"..."
     },
     {
         "id": "...",
@@ -297,7 +301,7 @@ To get the list of Staff, we need to send a `GET` request to `/users/staff/`. Th
         "created_at": "...",
         "homes":["..."],
         "roles":["..."],
-        "is_admin":"..."
+        "is_staff":"..."
     },
   ...
 ]
@@ -314,7 +318,7 @@ You can filter the list of NNAs by sending a `GET` request to `/users/staff/?<fi
         "created_at": "...",
         "homes":["..."],
         "roles":["..."],
-        "is_admin":"..."
+        "is_staff":"..."
     },
     {
         "id": "...",
@@ -324,7 +328,7 @@ You can filter the list of NNAs by sending a `GET` request to `/users/staff/?<fi
         "created_at": "...",
         "homes":["..."],
         "roles":["..."],
-        "is_admin":"..."
+        "is_staff":"..."
     },
   ...
 ]
@@ -338,7 +342,7 @@ The available filters are:
 "created_at",
 "homes",
 "roles",
-"is_admin"
+"is_staff"
 ```
 ## NNA operations
 ### Getting NNA details
@@ -415,7 +419,7 @@ To get the details of a user, we need to send a `GET` request to `/users/staff/<
     "created_at": "...",
     "homes":["..."],
     "roles":["..."],
-    "is_admin":"..."
+    "is_staff":"..."
 }
 ```
 ### Updating Staff details
@@ -429,7 +433,7 @@ To update the details of a user, we need to send a `PUT` request to `/users/staf
     "created_at": "...",
     "homes":["..."],
     "roles":["..."],
-    "is_admin":"..."
+    "is_staff":"..."
 }
 ```
 

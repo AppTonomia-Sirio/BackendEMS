@@ -108,7 +108,7 @@ class StaffUserSerializer(serializers.ModelSerializer):
             "created_at",
             "homes",
             "roles",
-            "is_admin",
+            "is_staff",
         )
         extra_kwargs = {
             "password": {"write_only": True},
@@ -129,16 +129,16 @@ class StaffUserSerializer(serializers.ModelSerializer):
             email=validated_data["email"],
             name=validated_data["name"],
             surname=validated_data["surname"],
-            is_admin=validated_data["is_admin"],
+            is_staff=validated_data["is_staff"],
         )
         user.set_password(validated_data["password"])
         user.save()
         for role in validated_data["roles"]:
             user.roles.add(role)
-            user.save()
         for home in validated_data["homes"]:
             user.homes.add(home)
-            user.save()
+        user.full_clean()
+        user.save()
         return user
 
 

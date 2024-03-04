@@ -18,6 +18,7 @@ class UserTests(APITestCase):
         self.role_therapist = Role.objects.get(name="Terapeuta")
         self.role_social_worker = Role.objects.get(name="Trabajador Social")
         self.home = Home.objects.create(name="Home1", address="Address1")
+        self.home2 = Home.objects.create(name="Home2", address="Address2")
 
         self.user = CustomUser.objects.create(
             name="Test",
@@ -76,7 +77,6 @@ class UserTests(APITestCase):
             "password": "test",
         }
         response = self.client.post(self.nna_uri, data)
-        print(response.data)
         self.assertEqual(response.status_code, 201)
 
     def test_create_nna_not_staff(self):
@@ -130,18 +130,6 @@ class UserTests(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key)
         response = self.client.get(self.staff_uri)
         self.assertEqual(response.status_code, 200)
-
-    def test_create_staff_not_superuser(self):
-        self.client.force_authenticate(user=self.user)
-        data = {
-            "email": "d@d.com",
-            "name": "name",
-            "surname": "surname",
-            "is_staff": True,
-            "password": "test",
-        }
-        response = self.client.post(self.staff_uri, data)
-        self.assertEqual(response.status_code, 403)
 
     def test_nna_detail_unauthenticated(self):
         response = self.client.get(self.nna_uri + str(self.nna.id) + "/")
@@ -200,4 +188,3 @@ class UserTests(APITestCase):
         }
         response = self.client.put(self.staff_uri + str(self.staff.id) + "/", data)
         self.assertEqual(response.status_code, 403)
-
