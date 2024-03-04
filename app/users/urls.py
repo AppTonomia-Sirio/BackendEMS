@@ -9,10 +9,10 @@ urlpatterns = [
     path("role/<int:id>", RoleView.as_view()),
     path("roles/", RoleListView.as_view()),
     path("nna/", NNAListCreateView.as_view()),
-    path("staff/", StaffListCreateView.as_view()),
-    path('nna/<int:id>/', NNADetailView.as_view()),
-    path('staff/<int:id>/', StaffDetailView.as_view()),
-    path('avatars/', AvatarListView.as_view()),
-    path('avatars/<int:id>', AvatarView.as_view()),
-    path('login/', views.obtain_auth_token)
+    path("staff/", StaffListView.as_view()),
+    path("nna/<int:id>/", NNADetailView.as_view()),
+    path("staff/<int:id>/", StaffDetailView.as_view()),
+    path("avatars/", AvatarListView.as_view()),
+    path("avatars/<int:id>", AvatarView.as_view()),
+    path("login/", views.obtain_auth_token),
 ]
