@@ -157,13 +157,6 @@ class StaffUser(CustomUser):
 
     REQUIRED_FIELDS = ["name", "surname", "password", "roles"]
 
-    def clean(self):
-        """Set defaults"""
-        if self.roles.contains(Role.objects.get(name="Trabajador Social")):
-            self.homes.set(Home.objects.all())
-        if self.roles.contains(Role.objects.get(name="Educador Tutor")):
-            self.is_admin = True
-
 
 class Avatar(models.Model):
     class Meta:

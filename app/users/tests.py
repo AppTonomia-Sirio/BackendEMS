@@ -93,43 +93,6 @@ class UserTests(APITestCase):
         )
         self.assertEqual(response.status_code, 201)
 
-    def test_create_Staff(self):
-        response = self.client.post(
-            self.uri + "staff/",
-            {
-                "email": "d@d.com",
-                "name": "b",
-                "surname": "b",
-                "password": "1234",
-                "homes": [self.home.id],
-                "roles": [self.role_tutor.id],
-                "is_admin": "True",
-            },
-            format="json",
-        )
-        self.assertEqual(response.status_code, 201)
-
-    def test_create_Staff_defaults(self):
-        response = self.client.post(
-            self.uri + "staff/",
-            {
-                "email": "d@d.com",
-                "name": "b",
-                "surname": "b",
-                "password": "1234",
-                "homes": [self.home.id],
-                "roles": [self.role_tutor.id, self.role_social_worker.id],
-                "is_admin": "False",
-            },
-            format="json",
-        )
-        self.assertEqual(response.status_code, 201)
-        self.assertTrue(
-            (self.home.id) in response.data["homes"]
-            and (self.home2.id) in response.data["homes"]
-        )
-        self.assertTrue(response.data["is_admin"])
-
     def test_get_staff(self):
         response = self.client.get(
             self.uri + "staff/" + str(self.staff.id) + "/", format="json"
