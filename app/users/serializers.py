@@ -95,6 +95,37 @@ class NNAUserSerializer(serializers.ModelSerializer):
             user.save()
             return user
 
+    def validate_autonomy_tutor(self, value):
+        code = "invalid"
+        # Check that autonomy tutor is registered as such
+        if not value.is_autonomy_tutor:
+            raise ValidationError(
+                _("The autonomy tutor must be activated as such before being assigned"),
+                code=code,
+            )
+        # Check that autonomy tutor isn't self
+        if value == self.instance:
+            raise ValidationError(
+                _("The autonomy tutor mustn't be assigned to itself"),
+                code=code,
+            )
+        return value
+
+    def validate(self, data):
+        code = "invalid"
+        # Check that Educadores Tutores are registered as such
+        if data.get("educators") and data["educators"]:
+            for educator in data["educators"]:
+                if not educator.roles.contains(Role.objects.get(name="Educador Tutor")):
+                    raise ValidationError(
+                        _(
+                            "%(name)s %(surname)s needs to be an Educator Tutor before being assigned"
+                        )
+                        % {"name": educator.name, "surname": educator.surname},
+                        code=code,
+                    )
+        return data
+
 
 class StaffUserSerializer(serializers.ModelSerializer):
     class Meta:

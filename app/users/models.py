@@ -146,19 +146,6 @@ class NNAUser(CustomUser):
         "document",
     ]
 
-    def clean(self):
-        code = 'invalid'
-        print(self)
-        #Check that autonomy tutor is registered as such
-        if self.autonomy_tutor and not self.autonomy_tutor.is_autonomy_tutor:
-            raise ValidationError(_("The autonomy tutor must be activated as such before being assigned"), code=code)
-        #Check that Educadores Tutores are registered as such
-        if self.educators.exists():
-            for educator in self.educators.all():
-                if not educator.roles.contains(Role.objects.get(name="Educador Tutor")):
-                    raise ValidationError(_("%(name)s %(surname)s needs to be an Educator Tutor before being assigned") % {"name":educator.name, "surname":educator.surname}, code=code)
-        super().clean()
-    
 
 class StaffUser(CustomUser):
     class Meta:
