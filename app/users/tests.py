@@ -343,6 +343,69 @@ class UserTests(APITestCase):
         response = self.client.patch(self.nna_uri + str(self.nna.id) + "/", data)
         self.assertEqual(response.status_code, 400)
     
+    def test_update_nna_validate_educators_failure_count(self):
+        self.client.force_authenticate(user=self.staff)
+        educator = StaffUser.objects.create(
+            email="k@c",
+            name="name",
+            surname="surname",
+            is_staff=True,
+            password=make_password("test"),
+        )
+        educator.homes.add(self.home)
+        educator.save()
+        educator.roles.add(self.role_tutor)
+        educator.save()
+        educator2 = StaffUser.objects.create(
+            email="l@c",
+            name="name",
+            surname="surname",
+            is_staff=True,
+            password=make_password("test"),
+        )
+        educator2.homes.add(self.home)
+        educator2.save()
+        educator2.roles.add(self.role_tutor)
+        educator2.save()
+        educator3 = StaffUser.objects.create(
+            email="m@c",
+            name="name",
+            surname="surname",
+            is_staff=True,
+            password=make_password("test"),
+        )
+        educator3.homes.add(self.home)
+        educator3.save()
+        educator3.roles.add(self.role_tutor)
+        educator3.save()
+        educator4 = StaffUser.objects.create(
+            email="n@c",
+            name="name",
+            surname="surname",
+            is_staff=True,
+            password=make_password("test"),
+        )
+        educator4.homes.add(self.home)
+        educator4.save()
+        educator4.roles.add(self.role_tutor)
+        educator4.save()
+        educator5 = StaffUser.objects.create(
+            email="z@c",
+            name="name",
+            surname="surname",
+            is_staff=True,
+            password=make_password("test"),
+        )
+        educator5.homes.add(self.home)
+        educator5.save()
+        educator5.roles.add(self.role_tutor)
+        educator5.save()
+        data = {
+            "educators": [educator.id, educator2.id, educator3.id, educator4.id, educator5.id]
+        }
+        response = self.client.patch(self.nna_uri + str(self.nna.id) + "/", data)
+        self.assertEqual(response.status_code, 400)
+    
     def test_update_nna_validate_main_educator_failure(self):
         self.client.force_authenticate(user=self.staff)
         educator = StaffUser.objects.create(

@@ -124,6 +124,16 @@ class NNAUserSerializer(serializers.ModelSerializer):
             )
         return value
 
+    def validate_educators(self, value):
+        """Validation for educator field"""
+        code = "invalid"
+        if len(value) > 4:
+            raise ValidationError(
+                _("Educators field cannot contain more than 4 educators."),
+                code=code
+            )
+        return value
+
     def validate(self, data):
         """Validation for fields that need context"""
 
