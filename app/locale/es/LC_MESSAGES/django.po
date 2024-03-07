@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-02 19:37+0100\n"
+"POT-Creation-Date: 2024-03-07 09:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,19 +17,46 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-#: .\config\settings.py:130
+
+#: config/settings.py:130
 msgid "English"
 msgstr "Inglés"
 
-#: .\config\settings.py:130
+#: config/settings.py:130
 msgid "Spanish"
 msgstr "Español"
 
-#: .\users\serializers.py:31 .\users\serializers.py:81
-#: .\users\serializers.py:124
+#: users/serializers.py:31 users/serializers.py:81 users/serializers.py:175
 msgid "This field is required"
 msgstr "Este campo es obligatorio"
 
-#: .\users\validators.py:8
+#: users/serializers.py:104
+msgid "The autonomy tutor must be activated as such before being assigned"
+msgstr "El tutor de autonomía tiene que estar activado como tal antes de ser asignado"
+
+#: users/serializers.py:110
+msgid "The autonomy tutor mustn't be assigned to itself"
+msgstr "El tutor de autonomía no debe estar asignado a sí mismo"
+
+#: users/serializers.py:119
+msgid "The therapist needs to have the Therapist role before being assigned"
+msgstr "El terapeuta tiene que tener el rol Terapeuta antes de ser asignado"
+
+#: users/serializers.py:132
+#, python-format
+msgid ""
+"%(name)s %(surname)s needs to be have the Educator Tutor role before being "
+"assigned"
+msgstr "%(name)s %(surname)s tiene que tener el rol Educador Tutor antes de ser asignado"
+
+#: users/serializers.py:142
+#, python-format
+msgid ""
+"%(name)s %(surname)s needs to be in the educators field before being "
+"assigned as main_educator"
+msgstr "%(name)s %(surname)s tiene que formar parte del campo educators antes de "
+"ser asignado como main_educator"
+
+#: users/validators.py:8
 msgid "Password is not valid"
 msgstr "La contraseña no es válida"
