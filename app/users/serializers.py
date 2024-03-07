@@ -90,10 +90,93 @@ class NNAUserSerializer(serializers.ModelSerializer):
                 date_of_birth=validated_data["date_of_birth"],
                 home=validated_data["home"],
                 gender=validated_data["gender"],
+                description=validated_data["description"]
             )
             user.set_password(validated_data["password"])
             user.save()
             return user
+
+    def validate_autonomy_tutor(self, value):
+        """Validation for autonomy_tutor field"""
+        code = "invalid"
+        # Check that autonomy tutor is registered as such
+        if not value.is_autonomy_tutor:
+            raise ValidationError(
+                _("The autonomy tutor must be activated as such before being assigned"),
+                code=code,
+            )
+        # Check that autonomy tutor isn't self
+        if value == self.instance:
+            raise ValidationError(
+                _("The autonomy tutor mustn't be assigned to itself"),
+                code=code,
+            )
+        return value
+
+    def validate_therapist(self, value):
+        """Validation for therapist field"""
+        code = "invalid"
+        # Therapist must have the therapist Role
+        if not value.roles.contains(Role.objects.get(name="Terapeuta")):
+            raise ValidationError(
+                _("The therapist needs to have the Therapist role before being assigned"),
+                code=code
+            )
+        return value
+
+    def validate(self, data):
+        """Validation for fields that need context"""
+
+        code = "invalid"
+        nna_home : Home = data["home"] if data.get("home") else self.instance.home
+        role_educador : Role = Role.objects.get(name="Educador Tutor")
+        educators = data["educators"] if data.get("educators") else self.instance.educators.all() if self.instance else None
+        therapist = data["therapist"] if data.get("therapist") else self.instance.therapist if self.instance else None
+        
+        #
+        # If educator is changed and not empty or if the home changed
+        #
+        if (data.get("educators") and data["educators"]) or (data.get("home") and educators != None):
+            for educator in educators:
+                # Check that Educadores Tutores are registered as such
+                if not educator.roles.contains(role_educador):
+                    raise ValidationError(
+                        _(
+                            "%(name)s %(surname)s needs to be have the Educator Tutor role before being assigned"
+                        )
+                        % {"name": educator.name, "surname": educator.surname},
+                        code=code,
+                    )
+                # Check that the educator belongs to the same home
+                if not educator.homes.contains(nna_home):
+                    raise ValidationError(_(
+                            "%(name)s %(surname)s must be assigned to home %(home_name)s before being assigned"
+                        ) % {"name": educator.name, "surname": educator.surname, "home_name": nna_home.name},
+                        code=code,
+                    )
+        #
+        # If the main_educator changed check if they are in the educators field
+        #
+        if data.get("main_educator"):
+            if data["main_educator"] not in educators:
+                raise ValidationError(
+                        _(
+                            "%(name)s %(surname)s needs to be in the educators field before being assigned as main_educator"
+                        )
+                        % {"name": data["main_educator"].name, "surname": data["main_educator"].surname},
+                        code=code,
+                    )
+        #
+        # If the therapist or home changed check they are on the same home
+        #
+        if data.get("therapist") or (data.get("home") and therapist != None):
+            if not therapist.homes.contains(nna_home):
+                raise ValidationError(_(
+                    "%(name)s %(surname)s must be assigned to home %(home_name)s before being assigned"
+                    ) % {"name": therapist.name, "surname": therapist.surname, "home_name": nna_home.name},
+                    code=code,
+                )
+        return data
 
 
 class StaffUserSerializer(serializers.ModelSerializer):

@@ -8,6 +8,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from rest_framework.authtoken.models import Token
 from django.db import models
 from polymorphic.models import PolymorphicModel, PolymorphicManager
+from django.utils.translation import gettext as _
 
 
 class CustomUserManager(BaseUserManager, PolymorphicManager):
