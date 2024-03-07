@@ -90,6 +90,7 @@ class NNAUserSerializer(serializers.ModelSerializer):
                 date_of_birth=validated_data["date_of_birth"],
                 home=validated_data["home"],
                 gender=validated_data["gender"],
+                description=validated_data["description"]
             )
             user.set_password(validated_data["password"])
             user.save()
@@ -111,6 +112,15 @@ class NNAUserSerializer(serializers.ModelSerializer):
             )
         return value
 
+    def validate_therapist(self, value):
+        code = "invalid"
+        if not value.roles.contains(Role.objects.get(name="Terapeuta")):
+            raise ValidationError(
+                _("The therapist needs to have the Therapist role before being assigned"),
+                code=code
+            )
+        return value
+
     def validate(self, data):
         code = "invalid"
         # Check that Educadores Tutores are registered as such
@@ -119,9 +129,19 @@ class NNAUserSerializer(serializers.ModelSerializer):
                 if not educator.roles.contains(Role.objects.get(name="Educador Tutor")):
                     raise ValidationError(
                         _(
-                            "%(name)s %(surname)s needs to be an Educator Tutor before being assigned"
+                            "%(name)s %(surname)s needs to be have the Educator Tutor role before being assigned"
                         )
                         % {"name": educator.name, "surname": educator.surname},
+                        code=code,
+                    )
+        if data.get("main_educator"):
+            educators = data["educators"] if data.get("educators") else self.instance.educators.all()
+            if data["main_educator"] not in educators:
+                raise ValidationError(
+                        _(
+                            "%(name)s %(surname)s needs to be in the educators field before being assigned as main_educator"
+                        )
+                        % {"name": data["main_educator"].name, "surname": data["main_educator"].surname},
                         code=code,
                     )
         return data

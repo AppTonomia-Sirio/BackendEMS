@@ -44,9 +44,12 @@ Let's create a new NNA user. To do that, we need to send a `POST` request to `/u
     "document": "...",
     "date_of_birth": "...",
     "home": "...",
-    "gender": "..."
+    "gender": "...",
+    "description": "..."
 }
 ```
+The `description` field is a string containing the description of the user.
+
 The `gender` field is the gender of the NNA, it can take the following values `{Male, Female, Other, Undefined}` default is `Undefined`. It is optional.
 
 The `home` field is the ID of the home the user is going to be assigned to.
