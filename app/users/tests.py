@@ -445,3 +445,64 @@ class UserTests(APITestCase):
         }
         response = self.client.patch(self.nna_uri + str(self.nna.id) + "/", data)
         self.assertEqual(response.status_code, 200)
+    
+    def test_restrict_by_home_staff_failure(self):
+        self.client.force_authenticate(user=self.staff)
+        educator = StaffUser.objects.create(
+            email="k@c",
+            name="name",
+            surname="surname",
+            is_staff=True,
+            password=make_password("test"),
+        )
+        home1 = Home.objects.create(
+            name="a",
+            address="b",
+        )
+        educator.homes.add(home1)
+        educator.save()
+        educator.roles.add(self.role_tutor)
+        educator.save()
+        response = self.client.get(self.staff_uri + str(educator.id) + "/")
+        self.assertEqual(response.status_code, 403)
+    
+    def test_restrict_by_home_nna_failure(self):
+        self.client.force_authenticate(user=self.staff)
+        home1 = Home.objects.create(
+            name="a",
+            address="b",
+        )
+        nna = NNAUser.objects.create(
+            email="l@l.com",
+            name="name",
+            surname="surname",
+            document="llllll",
+            date_of_birth="2000-03-03",
+            home=home1,
+            password=make_password("test"),
+            is_autonomy_tutor=False,
+        )
+        nna.save()
+        response = self.client.get(self.nna_uri + str(nna.id) + "/")
+        self.assertEqual(response.status_code, 403)
+    
+    def test_restrict_by_home_nna_success(self):
+        self.client.force_authenticate(user=self.staff)
+        response = self.client.get(self.nna_uri + str(self.nna.id) + "/")
+        self.assertEqual(response.status_code, 200)
+    
+    def test_restrict_by_home_staff_success(self):
+        self.client.force_authenticate(user=self.staff)
+        educator = StaffUser.objects.create(
+            email="k@c",
+            name="name",
+            surname="surname",
+            is_staff=True,
+            password=make_password("test"),
+        )
+        educator.homes.add(self.home)
+        educator.save()
+        educator.roles.add(self.role_tutor)
+        educator.save()
+        response = self.client.get(self.staff_uri + str(educator.id) + "/")
+        self.assertEqual(response.status_code, 200)

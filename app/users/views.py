@@ -14,8 +14,19 @@ class NNAListCreateView(generics.ListCreateAPIView):
     """Creates a new user"""
 
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (NNAListCreatePermission,)
-    queryset = NNAUser.objects.all()  # TODO add filters
+    permission_classes = (NNAListCreatePermission, IsInSameHomePermission)
+    
+    def get_queryset(self):
+        """Filter by home"""
+        user = self.request.user.get_real_instance()
+        user_class = self.request.user.get_real_instance_class()
+        if user_class == NNAUser:
+            return NNAUser.objects.filter(home=user.home)
+        elif user_class == StaffUser:
+            return NNAUser.objects.filter(home__in=user.homes.all())
+        else:
+            return NNAUser.objects.all()
+    
     serializer_class = NNAUserSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = (
@@ -45,8 +56,19 @@ class StaffListView(generics.ListAPIView):
     """Creates a new user"""
 
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (StaffListPermission,)
-    queryset = StaffUser.objects.all()
+    permission_classes = (StaffListPermission, IsInSameHomePermission)
+
+    def get_queryset(self):
+        """Filter by home"""
+        user = self.request.user.get_real_instance()
+        user_class = self.request.user.get_real_instance_class()
+        if user_class == NNAUser:
+            return StaffUser.objects.filter(homes__contains=user.home)
+        elif user_class == StaffUser:
+            return StaffUser.objects.filter(homes__in=user.homes.all())
+        else:
+            return StaffUser.objects.all()
+    
     serializer_class = StaffUserSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = (
@@ -73,7 +95,7 @@ class NNADetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = NNAUserSerializer
     lookup_field = "id"
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (NNADetailPermission,)
+    permission_classes = (NNADetailPermission, IsInSameHomePermission)
 
 
 class StaffDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -83,7 +105,7 @@ class StaffDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = StaffUserSerializer
     lookup_field = "id"
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (StaffDetailPermission,)
+    permission_classes = (StaffDetailPermission, IsInSameHomePermission)
 
 
 # Lists
