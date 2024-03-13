@@ -15,7 +15,7 @@ class NNAListCreateView(generics.ListCreateAPIView):
 
     authentication_classes = (TokenAuthentication,)
     permission_classes = (NNAListCreatePermission, IsInSameHomePermission)
-    
+
     def get_queryset(self):
         """Filter by home"""
         user = self.request.user.get_real_instance()
@@ -26,7 +26,7 @@ class NNAListCreateView(generics.ListCreateAPIView):
             return NNAUser.objects.filter(home__in=user.homes.all())
         else:
             return NNAUser.objects.all()
-    
+
     serializer_class = NNAUserSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = (
@@ -68,7 +68,7 @@ class StaffListView(generics.ListAPIView):
             return StaffUser.objects.filter(homes__in=user.homes.all())
         else:
             return StaffUser.objects.all()
-    
+
     serializer_class = StaffUserSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = (
@@ -106,6 +106,15 @@ class StaffDetailView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = "id"
     authentication_classes = (TokenAuthentication,)
     permission_classes = (StaffDetailPermission, IsInSameHomePermission)
+
+
+class CurrentUserView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = UserPolymorphicSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (StaffDetailPermission,)
+
+    def get_object(self):
+        return self.request.user.get_real_instance()
 
 
 # Lists
