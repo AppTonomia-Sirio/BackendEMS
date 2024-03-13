@@ -65,7 +65,7 @@ class StaffListView(generics.ListAPIView):
         if user_class == NNAUser:
             return StaffUser.objects.filter(homes__contains=user.home)
         elif user_class == StaffUser:
-            return StaffUser.objects.filter(homes__contains=user.homes.all())
+            return StaffUser.objects.filter(homes__in=user.homes.all())
         else:
             return StaffUser.objects.all()
     
