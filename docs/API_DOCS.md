@@ -20,7 +20,7 @@
     - [Getting Staff details](#getting-staff-details)
     - [Updating Staff details](#updating-staff-details)
     - [Partially updating Staff details](#partially-updating-staff-details)
-    - [Deleting NNA](#deleting-nna-1)
+    - [Deleting Staff](#deleting-staff)
 - [Homes and roles](#homes-and-roles)
   - [Getting list of homes](#getting-list-of-homes)
   - [Getting home details](#getting-home-details)
@@ -449,7 +449,7 @@ To partially update the details of a user, we need to send a `PATCH` request to 
 }
 ```
 
-### Deleting NNA
+### Deleting Staff
 To delete a user, we need to send a `DELETE` request to `/users/staff/<id>/`.
 You can only delete a user being a superuser.
 
