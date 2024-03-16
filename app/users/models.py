@@ -61,6 +61,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, PolymorphicModel):
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
+    special_code = models.CharField(default="", blank=True)
+
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["name", "surname", "password"]
 

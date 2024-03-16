@@ -25,8 +25,8 @@ class NNAListCreatePermission(permissions.BasePermission):
             "status",
         ]
         if (
-            any(field in request.data for field in forbidden_fields)
-            or request.user.is_authenticated
+                any(field in request.data for field in forbidden_fields)
+                or request.user.is_authenticated
         ):
             return False
 

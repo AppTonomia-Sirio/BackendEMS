@@ -1,6 +1,5 @@
 from rest_framework.test import APITestCase
 from rest_framework.test import APIClient
-from .views import *
 from django.contrib.auth.hashers import make_password
 from .models import *
 from rest_framework.authtoken.models import Token
@@ -188,3 +187,9 @@ class UserTests(APITestCase):
         }
         response = self.client.put(self.staff_uri + str(self.staff.id) + "/", data)
         self.assertEqual(response.status_code, 403)
+
+    def test_request_special_code(self):
+        response = self.client.put(self.uri + 'code?email="email@test.com"')
+        print(response.data)
+        self.assertEqual(response.status_code, 200)
+
