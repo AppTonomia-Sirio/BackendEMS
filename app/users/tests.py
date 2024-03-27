@@ -13,6 +13,8 @@ class UserTests(APITestCase):
         self.staff_uri = self.uri + "staff/"
         self.home_uri = self.uri + "home/"
         self.role_uri = self.uri + "role/"
+        self.restore_code_uri = self.uri + "restore/code/"
+        self.restore_password_uri = self.uri + "restore/password/"
         self.role_tutor = Role.objects.get(name="Educador Tutor")
         self.role_therapist = Role.objects.get(name="Terapeuta")
         self.role_social_worker = Role.objects.get(name="Trabajador Social")
@@ -187,6 +189,20 @@ class UserTests(APITestCase):
         }
         response = self.client.put(self.staff_uri + str(self.staff.id) + "/", data)
         self.assertEqual(response.status_code, 403)
+
+    def test_restore_code(self):
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key)
+        response = self.client.post(self.restore_code_uri, {"email": self.user.email})
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(PasswordResetCode.objects.filter(user=self.user).exists())
+
+    def test_restore_password(self):
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key)
+        PasswordResetCode.objects.create(user=self.user, code="123456")
+        response = self.client.post(self.restore_password_uri, {"email": self.user.email, "code": "123456"})
+        self.assertEqual(response.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertNotEqual(self.user.password, make_password("test"))
 
 
 

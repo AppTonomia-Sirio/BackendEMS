@@ -76,6 +76,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, PolymorphicModel):
         return self.email
 
 
+class PasswordResetCode(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
 class NNAUser(CustomUser):
     class Meta:
         verbose_name = "NNA"
@@ -95,7 +101,7 @@ class NNAUser(CustomUser):
         ("Undefined", "Undefined"),
     )
 
-    document = models.CharField(max_length=255, unique=True)
+    document = models.CharField(max_length=255, unique=True, default="")
     date_of_birth = models.DateField()
     home = models.ForeignKey("Home", on_delete=models.PROTECT)
     status = models.CharField(max_length=255, choices=STATUS_CHOICES, default="Pending")

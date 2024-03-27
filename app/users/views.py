@@ -1,19 +1,19 @@
-import random
-import string
-
-from django.core.mail import send_mail
-from rest_framework import generics, status
+from rest_framework import generics
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.response import Response
 
-from .models import *
+from django.utils import timezone
+from django.core.mail import send_mail
+from django.utils.crypto import get_random_string
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
 from .serializers import *
 from django_filters import rest_framework as filters
 from .permissions import *
 
 
 #  Create users views
-
 
 
 class NNAListCreateView(generics.ListCreateAPIView):
@@ -90,6 +90,58 @@ class StaffDetailView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = "id"
     authentication_classes = (TokenAuthentication,)
     permission_classes = (StaffDetailPermission,)
+
+
+class PasswordResetCodeView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email')
+        user = CustomUser.objects.filter(email=email).first()
+        if not user:
+            return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        code = get_random_string(length=6)
+        PasswordResetCode.objects.create(user=user, code=code)
+
+        send_mail(
+            'Password reset code',
+            f'Your password reset code is {code}',
+            'from@example.com',
+            [email],
+            fail_silently=False,
+        )
+
+        return Response({'detail': 'Code sent'})
+
+
+class PasswordResetView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email')
+        code = request.data.get('code')
+        user = CustomUser.objects.filter(email=email).first()
+        if not user:
+            return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        reset_code = PasswordResetCode.objects.filter(user=user, code=code).first()
+        if not reset_code or timezone.now() - reset_code.created_at > timezone.timedelta(minutes=5):
+            return Response({'detail': 'Invalid or expired code'}, status=status.HTTP_400_BAD_REQUEST)
+
+        new_password = get_random_string(length=10)
+        user.set_password(new_password)
+        user.save()
+
+        send_mail(
+            'New password',
+            f'Your new password is {new_password}',
+            'from@example.com',
+            [email],
+            fail_silently=False,
+        )
+
+        return Response({'detail': 'New password sent'})
 
 
 # Lists
