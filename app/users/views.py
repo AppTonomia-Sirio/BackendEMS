@@ -1,16 +1,17 @@
 from rest_framework import generics
 from rest_framework.authentication import TokenAuthentication
-
-from django.utils import timezone
 from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from .serializers import *
 from django_filters import rest_framework as filters
 from .permissions import *
+from django.utils import timezone
+from django.core.cache import cache
+from rest_framework.authtoken import views as drf_views
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 
 #  Create users views
@@ -90,6 +91,28 @@ class StaffDetailView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = "id"
     authentication_classes = (TokenAuthentication,)
     permission_classes = (StaffDetailPermission,)
+
+
+class CustomAuthToken(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        ip = request.META.get('REMOTE_ADDR')
+        failed_attempts = cache.get(ip, 0)
+
+        if failed_attempts >= 5:
+            return Response({'detail': 'Too many failed login attempts. Please try again in 5 minutes.'},
+                            status=status.HTTP_429_TOO_MANY_REQUESTS)
+
+        response = drf_views.obtain_auth_token(request._request, *args, **kwargs)
+
+        if response.status_code == status.HTTP_200_OK:
+            cache.delete(ip)  # Reset the failed login attempts
+        else:
+            failed_attempts += 1
+            cache.set(ip, failed_attempts, 60 * 5)  # Store the failed attempts for 5 minutes
+
+        return response
 
 
 class PasswordResetCodeView(APIView):

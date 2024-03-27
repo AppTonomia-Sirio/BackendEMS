@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from rest_framework.test import APITestCase
 from rest_framework.test import APIClient
 from django.contrib.auth.hashers import make_password
@@ -7,6 +8,7 @@ from rest_framework.authtoken.models import Token
 
 class UserTests(APITestCase):
     def setUp(self):
+        cache.clear()
         self.client = APIClient()
         self.uri = "/users/"
         self.nna_uri = self.uri + "nna/"
@@ -15,6 +17,7 @@ class UserTests(APITestCase):
         self.role_uri = self.uri + "role/"
         self.restore_code_uri = self.uri + "restore/code/"
         self.restore_password_uri = self.uri + "restore/password/"
+        self.login_uri = self.uri + "login/"
         self.role_tutor = Role.objects.get(name="Educador Tutor")
         self.role_therapist = Role.objects.get(name="Terapeuta")
         self.role_social_worker = Role.objects.get(name="Trabajador Social")
@@ -204,5 +207,24 @@ class UserTests(APITestCase):
         self.user.refresh_from_db()
         self.assertNotEqual(self.user.password, make_password("test"))
 
+    def test_login(self):
+        data = {
+            "username": self.nna.email,
+            "password": "test",
+        }
+        response = self.client.post(self.login_uri, data)
+        self.assertEqual(response.status_code, 200)
 
+    def test_ip_block(self):
+        data = {
+            "username": "email@test.com",
+            "password": "wrong_password",
+        }
+        for _ in range(5):
+            response = self.client.post(self.login_uri, data, REMOTE_ADDR='127.0.0.1')
+            self.assertEqual(response.status_code, 400)
 
+        # After 5 failed attempts, the IP should be blocked
+        response = self.client.post(self.login_uri, data, REMOTE_ADDR='127.0.0.1')
+        self.assertEqual(response.status_code, 429)
+        self.assertEqual(response.data['detail'], 'Too many failed login attempts. Please try again in 5 minutes.')
