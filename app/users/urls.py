@@ -15,6 +15,4 @@ urlpatterns = [
     path("avatars/", AvatarListView.as_view()),
     path("avatars/<int:id>", AvatarView.as_view()),
     path("login/", views.obtain_auth_token),
-    path("code/", SendCodeView.as_view()),
-    path("restore/", RestorePasswordView.as_view()),
 ]
