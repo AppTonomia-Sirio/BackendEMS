@@ -1,4 +1,5 @@
 from rest_framework import permissions
+from .models import *
 
 
 class NNAListCreatePermission(permissions.BasePermission):
@@ -83,14 +84,42 @@ class StaffDetailPermission(permissions.BasePermission):
     # Only superuser can update or delete
     # To retrieve - user must be authenticated
 
-    def has_permission(self, request, view):
+    def has_object_permission(self, request, view, obj):
         if request.user.is_superuser:
             return True
 
         if request.method == "GET":
             return request.user.is_authenticated
 
+        if request.method == "PUT" or request.method == "PATCH":
+            return request.user == obj
+
         return False
+
+
+class IsInSameHomePermission(permissions.BasePermission):
+    """Permission to limit access to only users in the same home"""
+
+    def has_object_permission(self, request, view, obj):
+        user = request.user.get_real_instance()
+        requested = obj.get_real_instance()
+        user_class = request.user.get_real_instance_class()
+        obj_class = obj.get_real_instance_class()
+
+        if user_class == CustomUser:
+            return True
+
+        if user_class == StaffUser:
+            if obj_class == NNAUser:
+                return user.homes.all().contains(requested.home)
+            elif obj_class == StaffUser:
+                return bool(set(requested.homes.all()).intersection(user.homes.all()))
+
+        if user_class == NNAUser:
+            if obj_class == NNAUser:
+                return user.home == requested.home
+            elif obj_class == StaffUser:
+                return requested.homes.all().contains(user.home)
 
 
 class IsSuperUserToModify(permissions.BasePermission):

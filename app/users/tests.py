@@ -193,6 +193,7 @@ class UserTests(APITestCase):
         response = self.client.put(self.staff_uri + str(self.staff.id) + "/", data)
         self.assertEqual(response.status_code, 403)
 
+
     def test_restore_code(self):
         self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key)
         response = self.client.post(self.restore_code_uri, {"email": self.user.email})
@@ -228,3 +229,320 @@ class UserTests(APITestCase):
         response = self.client.post(self.login_uri, data, REMOTE_ADDR='127.0.0.1')
         self.assertEqual(response.status_code, 429)
         self.assertEqual(response.data['detail'], 'Too many failed login attempts. Please try again in 5 minutes.')
+    def test_update_nna_validate_autonomytutor_success(self):
+        self.client.force_authenticate(user=self.staff)
+        autonomy_nna = NNAUser.objects.create(
+            email="ol@b",
+            name="name",
+            surname="surname",
+            document="oooooo",
+            date_of_birth="2000-03-03",
+            home=self.home,
+            password=make_password("test"),
+            is_autonomy_tutor=True,
+        )
+        data = {"autonomy_tutor": autonomy_nna.id}
+        response = self.client.patch(self.nna_uri + str(self.nna.id) + "/", data)
+        self.assertEqual(response.status_code, 200)
+
+    def test_update_nna_validate_autonomytutor_failure_reflexive(self):
+        self.client.force_authenticate(user=self.staff)
+        autonomy_nna = NNAUser.objects.create(
+            email="l@l.com",
+            name="name",
+            surname="surname",
+            document="llllll",
+            date_of_birth="2000-03-03",
+            home=self.home,
+            password=make_password("test"),
+            is_autonomy_tutor=True,
+        )
+        data = {"autonomy_tutor": autonomy_nna.id}
+        response = self.client.patch(self.nna_uri + str(autonomy_nna.id) + "/", data)
+        self.assertEqual(response.status_code, 400)
+
+    def test_update_nna_validate_autonomytutor_failure_not_true(self):
+        self.client.force_authenticate(user=self.staff)
+        autonomy_nna = NNAUser.objects.create(
+            email="l@l.com",
+            name="name",
+            surname="surname",
+            document="llllll",
+            date_of_birth="2000-03-03",
+            home=self.home,
+            password=make_password("test"),
+            is_autonomy_tutor=False,
+        )
+        data = {"autonomy_tutor": autonomy_nna.id}
+        response = self.client.patch(self.nna_uri + str(self.nna.id) + "/", data)
+        self.assertEqual(response.status_code, 400)
+
+    def test_update_nna_validate_therapist_success(self):
+        self.client.force_authenticate(user=self.staff)
+        therapist = StaffUser.objects.create(
+            email="k@c",
+            name="name",
+            surname="surname",
+            is_staff=True,
+            password=make_password("test"),
+        )
+        therapist.homes.add(self.home)
+        therapist.save()
+        therapist.roles.add(self.role_therapist)
+        therapist.save()
+        data = {"therapist": therapist.id}
+        response = self.client.patch(self.nna_uri + str(self.nna.id) + "/", data)
+        self.assertEqual(response.status_code, 200)
+
+    def test_update_nna_validate_therapist_failure_role(self):
+        self.client.force_authenticate(user=self.staff)
+        data = {"therapist": self.staff.id}
+        response = self.client.patch(self.nna_uri + str(self.nna.id) + "/", data)
+        self.assertEqual(response.status_code, 400)
+
+    def test_update_nna_validate_therapist_failure_home(self):
+        self.client.force_authenticate(user=self.staff)
+        therapist = StaffUser.objects.create(
+            email="k@c",
+            name="name",
+            surname="surname",
+            is_staff=True,
+            password=make_password("test"),
+        )
+        home1 = Home.objects.create(
+            name="a",
+            address="b",
+        )
+        therapist.homes.add(home1)
+        therapist.save()
+        therapist.roles.add(self.role_therapist)
+        therapist.save()
+        data = {"therapist": therapist.id}
+        response = self.client.patch(self.nna_uri + str(self.nna.id) + "/", data)
+        self.assertEqual(response.status_code, 400)
+
+    def test_update_nna_validate_educators_success(self):
+        self.client.force_authenticate(user=self.staff)
+        educator = StaffUser.objects.create(
+            email="k@c",
+            name="name",
+            surname="surname",
+            is_staff=True,
+            password=make_password("test"),
+        )
+        educator.homes.add(self.home)
+        educator.save()
+        educator.roles.add(self.role_tutor)
+        educator.save()
+        data = {"educators": [educator.id]}
+        response = self.client.patch(self.nna_uri + str(self.nna.id) + "/", data)
+        self.assertEqual(response.status_code, 200)
+
+    def test_update_nna_validate_educators_failure_role(self):
+        self.client.force_authenticate(user=self.staff)
+        data = {"educators": [self.staff.id]}
+        response = self.client.patch(self.nna_uri + str(self.nna.id) + "/", data)
+        self.assertEqual(response.status_code, 400)
+
+    def test_update_nna_validate_educators_failure_home(self):
+        self.client.force_authenticate(user=self.staff)
+        educator = StaffUser.objects.create(
+            email="k@c",
+            name="name",
+            surname="surname",
+            is_staff=True,
+            password=make_password("test"),
+        )
+        home1 = Home.objects.create(
+            name="a",
+            address="b",
+        )
+        educator.homes.add(home1)
+        educator.save()
+        educator.roles.add(self.role_tutor)
+        educator.save()
+        data = {"educators": [educator.id]}
+        response = self.client.patch(self.nna_uri + str(self.nna.id) + "/", data)
+        self.assertEqual(response.status_code, 400)
+
+    def test_update_nna_validate_educators_failure_count(self):
+        self.client.force_authenticate(user=self.staff)
+        educator = StaffUser.objects.create(
+            email="k@c",
+            name="name",
+            surname="surname",
+            is_staff=True,
+            password=make_password("test"),
+        )
+        educator.homes.add(self.home)
+        educator.save()
+        educator.roles.add(self.role_tutor)
+        educator.save()
+        educator2 = StaffUser.objects.create(
+            email="l@c",
+            name="name",
+            surname="surname",
+            is_staff=True,
+            password=make_password("test"),
+        )
+        educator2.homes.add(self.home)
+        educator2.save()
+        educator2.roles.add(self.role_tutor)
+        educator2.save()
+        educator3 = StaffUser.objects.create(
+            email="m@c",
+            name="name",
+            surname="surname",
+            is_staff=True,
+            password=make_password("test"),
+        )
+        educator3.homes.add(self.home)
+        educator3.save()
+        educator3.roles.add(self.role_tutor)
+        educator3.save()
+        educator4 = StaffUser.objects.create(
+            email="n@c",
+            name="name",
+            surname="surname",
+            is_staff=True,
+            password=make_password("test"),
+        )
+        educator4.homes.add(self.home)
+        educator4.save()
+        educator4.roles.add(self.role_tutor)
+        educator4.save()
+        educator5 = StaffUser.objects.create(
+            email="z@c",
+            name="name",
+            surname="surname",
+            is_staff=True,
+            password=make_password("test"),
+        )
+        educator5.homes.add(self.home)
+        educator5.save()
+        educator5.roles.add(self.role_tutor)
+        educator5.save()
+        data = {
+            "educators": [
+                educator.id,
+                educator2.id,
+                educator3.id,
+                educator4.id,
+                educator5.id,
+            ]
+        }
+        response = self.client.patch(self.nna_uri + str(self.nna.id) + "/", data)
+        self.assertEqual(response.status_code, 400)
+
+    def test_update_nna_validate_main_educator_failure(self):
+        self.client.force_authenticate(user=self.staff)
+        educator = StaffUser.objects.create(
+            email="k@c",
+            name="name",
+            surname="surname",
+            is_staff=True,
+            password=make_password("test"),
+        )
+        educator.homes.add(self.home)
+        educator.save()
+        educator.roles.add(self.role_tutor)
+        educator.save()
+        data = {"educators": [educator.id], "main_educator": self.staff.id}
+        response = self.client.patch(self.nna_uri + str(self.nna.id) + "/", data)
+        self.assertEqual(response.status_code, 400)
+
+    def test_update_nna_validate_main_educator_success(self):
+        self.client.force_authenticate(user=self.staff)
+        educator = StaffUser.objects.create(
+            email="k@c",
+            name="name",
+            surname="surname",
+            is_staff=True,
+            password=make_password("test"),
+        )
+        educator.homes.add(self.home)
+        educator.save()
+        educator.roles.add(self.role_tutor)
+        educator.save()
+        data = {"educators": [educator.id], "main_educator": educator.id}
+        response = self.client.patch(self.nna_uri + str(self.nna.id) + "/", data)
+        self.assertEqual(response.status_code, 200)
+
+    def test_restrict_by_home_staff_failure(self):
+        self.client.force_authenticate(user=self.staff)
+        educator = StaffUser.objects.create(
+            email="k@c",
+            name="name",
+            surname="surname",
+            is_staff=True,
+            password=make_password("test"),
+        )
+        home1 = Home.objects.create(
+            name="a",
+            address="b",
+        )
+        educator.homes.add(home1)
+        educator.save()
+        educator.roles.add(self.role_tutor)
+        educator.save()
+        response = self.client.get(self.staff_uri + str(educator.id) + "/")
+        self.assertEqual(response.status_code, 403)
+
+    def test_restrict_by_home_nna_failure(self):
+        self.client.force_authenticate(user=self.staff)
+        home1 = Home.objects.create(
+            name="a",
+            address="b",
+        )
+        nna = NNAUser.objects.create(
+            email="l@l.com",
+            name="name",
+            surname="surname",
+            document="llllll",
+            date_of_birth="2000-03-03",
+            home=home1,
+            password=make_password("test"),
+            is_autonomy_tutor=False,
+        )
+        nna.save()
+        response = self.client.get(self.nna_uri + str(nna.id) + "/")
+        self.assertEqual(response.status_code, 403)
+
+    def test_restrict_by_home_nna_success(self):
+        self.client.force_authenticate(user=self.staff)
+        response = self.client.get(self.nna_uri + str(self.nna.id) + "/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_restrict_by_home_staff_success(self):
+        self.client.force_authenticate(user=self.staff)
+        educator = StaffUser.objects.create(
+            email="k@c",
+            name="name",
+            surname="surname",
+            is_staff=True,
+            password=make_password("test"),
+        )
+        educator.homes.add(self.home)
+        educator.save()
+        educator.roles.add(self.role_tutor)
+        educator.save()
+        response = self.client.get(self.staff_uri + str(educator.id) + "/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_current_nna(self):
+        self.client.force_authenticate(user=self.nna)
+        response = self.client.get(self.uri + "current/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["resourcetype"], "NNAUser")
+
+    def test_get_current_Staff(self):
+        self.client.force_authenticate(user=self.staff)
+        response = self.client.get(self.uri + "current/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["resourcetype"], "StaffUser")
+    
+    def test_get_current_CustomUser(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(self.uri + "current/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["resourcetype"], "CustomUser")

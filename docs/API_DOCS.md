@@ -20,7 +20,8 @@
     - [Getting Staff details](#getting-staff-details)
     - [Updating Staff details](#updating-staff-details)
     - [Partially updating Staff details](#partially-updating-staff-details)
-    - [Deleting NNA](#deleting-nna-1)
+    - [Deleting Staff](#deleting-staff)
+  - [Getting, updating and deleting Current User](#getting-updating-and-deleting-current-user)
 - [Homes and roles](#homes-and-roles)
   - [Getting list of homes](#getting-list-of-homes)
   - [Getting home details](#getting-home-details)
@@ -44,9 +45,12 @@ Let's create a new NNA user. To do that, we need to send a `POST` request to `/u
     "document": "...",
     "date_of_birth": "...",
     "home": "...",
-    "gender": "..."
+    "gender": "...",
+    "description": "..."
 }
 ```
+The `description` field is a string containing the description of the user.
+
 The `gender` field is the gender of the NNA, it can take the following values `{Male, Female, Other, Undefined}` default is `Undefined`. It is optional.
 
 The `home` field is the ID of the home the user is going to be assigned to.
@@ -446,9 +450,21 @@ To partially update the details of a user, we need to send a `PATCH` request to 
 }
 ```
 
-### Deleting NNA
+### Deleting Staff
 To delete a user, we need to send a `DELETE` request to `/users/staff/<id>/`.
 You can only delete a user being a superuser.
+
+## Getting, updating and deleting Current User
+
+The same as above, you can send a `DELETE | PATCH | PUT | GET` request to `/users/current/`. 
+The body will be the same as above, depending on the type of user. A new field is added to the response body in order to recognize different user types.
+```json
+{
+    ...
+    "resourcetype": "..."
+}
+```
+`resourcetype` can be any of the following User types `{CustomUser, NNAUser, StaffUser}`
 
 # Homes and roles
 ## Getting list of homes
