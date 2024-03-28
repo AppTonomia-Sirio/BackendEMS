@@ -1,55 +1,201 @@
-from rest_framework.response import Response
-from rest_framework import status, serializers
-from rest_framework.views import APIView
 from rest_framework import generics
-import django_filters.rest_framework
-from .serializers import UserSerializer, HomeSerializer, RoleSerializer
-from django.contrib.auth import authenticate
-from .models import CustomUser, Home, Role
-from .filters import UserFilter
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
-from .permissions import UserDetailPermission, IsAdminOrSuperUser
+from django.core.mail import send_mail
+from django.utils.crypto import get_random_string
+from rest_framework.permissions import AllowAny
+from .serializers import *
+from django_filters import rest_framework as filters
+from .permissions import *
+from django.utils import timezone
+from django.core.cache import cache
+from rest_framework.authtoken import views as drf_views
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 
-# Create your views here.
-
-# LOGIN / REGISTER Views
+#  Create users views
 
 
-class LoginView(APIView):
-    """Retrieves a token for a user with the given credentials"""
-
-    permission_classes = ()
-
-    class InputSerializer(serializers.Serializer):
-        email = serializers.EmailField()
-        password = serializers.CharField()
-
-    def post(self, request):
-        serializer = self.InputSerializer(data=request.data)
-        if serializer.is_valid():
-            email = serializer.validated_data["email"]
-            password = serializer.validated_data["password"]
-            user = authenticate(email=email, password=password)
-            if user:
-                return Response(
-                    {"token": user.auth_token.key}, status=status.HTTP_200_OK
-                )
-            else:
-                return Response(
-                    {"error": "Wrong Credentials"}, status=status.HTTP_400_BAD_REQUEST
-                )
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class UserCreate(generics.CreateAPIView):
+class NNAListCreateView(generics.ListCreateAPIView):
     """Creates a new user"""
 
-    authentication_classes = ()
-    permission_classes = ()
-    serializer_class = UserSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (NNAListCreatePermission, IsInSameHomePermission)
+
+    def get_queryset(self):
+        """Filter by home"""
+        user = self.request.user.get_real_instance()
+        user_class = self.request.user.get_real_instance_class()
+        if user_class == NNAUser:
+            return NNAUser.objects.filter(home=user.home)
+        elif user_class == StaffUser:
+            return NNAUser.objects.filter(home__in=user.homes.all())
+        else:
+            return NNAUser.objects.all()
+
+    serializer_class = NNAUserSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_fields = (
+        "id",
+        "email",
+        "name",
+        "surname",
+        "created_at",
+        "document",
+        "date_of_birth",
+        "home",
+        "status",
+        "gender",
+        "educators",
+        "therapist",
+        "development_level",
+        "performance",
+        "avatar",
+        "description",
+        "is_autonomy_tutor",
+        "autonomy_tutor",
+        "entered_at",
+    )
+
+
+class StaffListView(generics.ListAPIView):
+    """Creates a new user"""
+
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (StaffListPermission, IsInSameHomePermission)
+
+    def get_queryset(self):
+        """Filter by home"""
+        user = self.request.user.get_real_instance()
+        user_class = self.request.user.get_real_instance_class()
+        if user_class == NNAUser:
+            return StaffUser.objects.filter(homes__contains=user.home)
+        elif user_class == StaffUser:
+            return StaffUser.objects.filter(homes__in=user.homes.all())
+        else:
+            return StaffUser.objects.all()
+
+    serializer_class = StaffUserSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_fields = (
+        "id",
+        "email",
+        "name",
+        "surname",
+        "password",
+        "created_at",
+        "homes",
+        "roles",
+        "is_staff",
+    )
+
+
+# Users retrieve and edits
+
+
+# Users retrieve and edits
+class NNADetailView(generics.RetrieveUpdateDestroyAPIView):
+    """Retrieves, updates or deletes an NNA"""
+
+    queryset = NNAUser.objects.all()
+    serializer_class = NNAUserSerializer
+    lookup_field = "id"
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (NNADetailPermission, IsInSameHomePermission)
+
+
+class StaffDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """Retrieves, updates or deletes a staff"""
+
+    queryset = StaffUser.objects.all()
+    serializer_class = StaffUserSerializer
+    lookup_field = "id"
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (StaffDetailPermission, IsInSameHomePermission)
+
+
+class CurrentUserView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = UserPolymorphicSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (StaffDetailPermission,)
+
+    def get_object(self):
+        return self.request.user.get_real_instance()
+
+
+class CustomAuthToken(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        ip = request.META.get('REMOTE_ADDR')
+        failed_attempts = cache.get(ip, 0)
+
+        if failed_attempts >= 5:
+            return Response({'detail': 'Too many failed login attempts. Please try again in 5 minutes.'},
+                            status=status.HTTP_429_TOO_MANY_REQUESTS)
+
+        response = drf_views.obtain_auth_token(request._request, *args, **kwargs)
+
+        if response.status_code == status.HTTP_200_OK:
+            cache.delete(ip)  # Reset the failed login attempts
+        else:
+            failed_attempts += 1
+            cache.set(ip, failed_attempts, 60 * 5)  # Store the failed attempts for 5 minutes
+
+        return response
+
+
+class PasswordResetCodeView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email')
+        user = CustomUser.objects.filter(email=email).first()
+        if not user:
+            return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        code = get_random_string(length=6)
+        PasswordResetCode.objects.create(user=user, code=code)
+
+        send_mail(
+            'Password reset code',
+            f'Your password reset code is {code}',
+            'from@example.com',
+            [email],
+            fail_silently=False,
+        )
+
+        return Response({'detail': 'Code sent'})
+
+
+class PasswordResetView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email')
+        code = request.data.get('code')
+        user = CustomUser.objects.filter(email=email).first()
+        if not user:
+            return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        reset_code = PasswordResetCode.objects.filter(user=user, code=code).first()
+        if not reset_code or timezone.now() - reset_code.created_at > timezone.timedelta(minutes=5):
+            return Response({'detail': 'Invalid or expired code'}, status=status.HTTP_400_BAD_REQUEST)
+
+        new_password = get_random_string(length=10)
+        user.set_password(new_password)
+        user.save()
+
+        send_mail(
+            'New password',
+            f'Your new password is {new_password}',
+            'from@example.com',
+            [email],
+            fail_silently=False,
+        )
+
+        return Response({'detail': 'New password sent'})
 
 
 # Lists
@@ -57,7 +203,7 @@ class HomeListView(generics.ListAPIView):
     """Lists all homes"""
 
     permission_classes = ()
-    authentication_classes = ()
+    authentication_classes = (TokenAuthentication,)
     queryset = Home.objects.all()
     serializer_class = HomeSerializer
 
@@ -66,87 +212,46 @@ class RoleListView(generics.ListAPIView):
     """Lists all roles"""
 
     permission_classes = ()
-    authentication_classes = ()
+    authentication_classes = (TokenAuthentication,)
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
 
 
-# Users data
-
-
-class CurrentUserView(APIView):
-    """Retrieves the data of the current user"""
-
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        serializer = UserSerializer(request.user)
-        return Response(serializer.data)
-
-
-class UserListView(generics.ListAPIView):
-    """Lists all users"""
-
-    serializer_class = UserSerializer
-    queryset = CustomUser.objects.all()
-    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
-    filterset_class = UserFilter
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-
-
-class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
-    """Retrieves, updates or deletes a user"""
-
-    queryset = CustomUser.objects.all()
-    serializer_class = UserSerializer
-    lookup_field = "id"
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated, UserDetailPermission]
-
-
-class UserChangeStatusView(APIView):
-    """Changes the status of a user"""
-
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated, IsAdminOrSuperUser]
-
-    def post(self, request, id):
-        user = CustomUser.objects.get(id=id)
-        if not 'status' in request.data:
-            return Response(
-                {"error": "Status field is required"}, status=status.HTTP_400_BAD_REQUEST
-            )
-        new_status = request.data["status"]
-        if new_status not in ["Active", "Pending", "Frozen"]:
-            return Response(
-                {"error": "Status must be Active, Pending or Frozen"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        user.status = new_status
-        user.save()
-        return Response({'status': new_status},status=status.HTTP_200_OK)
-
-
-# Home data and role data
-
-
-class HomeView(generics.RetrieveAPIView):
-    """Retrieves, updates or deletes a home"""
+class AvatarListView(generics.ListAPIView):
+    """Lists all avatars"""
 
     permission_classes = ()
     authentication_classes = ()
+    queryset = Avatar.objects.all()
+    serializer_class = AvatarSerializer
+
+
+# Minor models data
+class AvatarView(generics.RetrieveAPIView):
+    """Retrieves an Avatar"""
+
+    permission_classes = ()
+    authentication_classes = ()
+    queryset = Avatar.objects.all()
+    serializer_class = AvatarSerializer
+    lookup_field = "id"
+
+
+class HomeView(generics.RetrieveAPIView):
+    """Retrieves a home"""
+
+    permission_classes = (IsSuperUserToModify,)
+    authentication_classes = (TokenAuthentication,)
     queryset = Home.objects.all()
     serializer_class = HomeSerializer
     lookup_field = "id"
 
 
 class RoleView(generics.RetrieveAPIView):
-    """Retrieves, updates or deletes a role"""
+    """Retrieves a role"""
 
-    permission_classes = ()
-    authentication_classes = ()
+    permission_classes = (IsSuperUserToModify,)
+    authentication_classes = (TokenAuthentication,)
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
     lookup_field = "id"

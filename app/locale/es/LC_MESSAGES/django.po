@@ -1,0 +1,79 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-03-08 08:02+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: config/settings.py:130
+msgid "English"
+msgstr "Inglés"
+
+#: config/settings.py:130
+msgid "Spanish"
+msgstr "Español"
+
+#: users/serializers.py:31 users/serializers.py:81 users/serializers.py:217
+msgid "This field is required"
+msgstr "Este campo es obligatorio"
+
+#: users/serializers.py:105
+msgid "The autonomy tutor must be activated as such before being assigned"
+msgstr ""
+"El tutor de autonomía tiene que estar activado como tal antes de ser asignado"
+
+#: users/serializers.py:111
+msgid "The autonomy tutor mustn't be assigned to itself"
+msgstr "El tutor de autonomía no debe estar asignado a sí mismo"
+
+#: users/serializers.py:122
+msgid "The therapist needs to have the Therapist role before being assigned"
+msgstr "El terapeuta tiene que tener el rol Terapeuta antes de ser asignado"
+
+#: users/serializers.py:132
+msgid "Educators field cannot contain more than 4 educators."
+msgstr "El campo educators no puede contener más de 4 educadores."
+
+#: users/serializers.py:155
+#, python-format
+msgid ""
+"%(name)s %(surname)s needs to be have the Educator Tutor role before being "
+"assigned"
+msgstr ""
+"%(name)s %(surname)s tiene que tener el rol Educador Tutor antes de ser "
+"asignado"
+
+#: users/serializers.py:163 users/serializers.py:185
+#, python-format
+msgid ""
+"%(name)s %(surname)s must be assigned to home %(home_name)s before being "
+"assigned"
+msgstr ""
+"%(name)s %(surname)s tiene que estar asignado al hogar %(home_name)s antes "
+"de ser asignado"
+
+#: users/serializers.py:174
+#, python-format
+msgid ""
+"%(name)s %(surname)s needs to be in the educators field before being "
+"assigned as main_educator"
+msgstr ""
+"%(name)s %(surname)s tiene que formar parte del campo educators antes de ser "
+"asignado como main_educator"
+
+#: users/validators.py:8
+msgid "Password is not valid"
+msgstr "La contraseña no es válida"
