@@ -1,10 +1,17 @@
 from rest_framework import generics
 from rest_framework.authentication import TokenAuthentication
-
-from .models import *
+from django.core.mail import send_mail
+from django.utils.crypto import get_random_string
+from rest_framework.permissions import AllowAny
 from .serializers import *
 from django_filters import rest_framework as filters
 from .permissions import *
+from django.utils import timezone
+from django.core.cache import cache
+from rest_framework.authtoken import views as drf_views
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 
 #  Create users views
@@ -115,6 +122,80 @@ class CurrentUserView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_object(self):
         return self.request.user.get_real_instance()
+
+
+class CustomAuthToken(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        ip = request.META.get('REMOTE_ADDR')
+        failed_attempts = cache.get(ip, 0)
+
+        if failed_attempts >= 5:
+            return Response({'detail': 'Too many failed login attempts. Please try again in 5 minutes.'},
+                            status=status.HTTP_429_TOO_MANY_REQUESTS)
+
+        response = drf_views.obtain_auth_token(request._request, *args, **kwargs)
+
+        if response.status_code == status.HTTP_200_OK:
+            cache.delete(ip)  # Reset the failed login attempts
+        else:
+            failed_attempts += 1
+            cache.set(ip, failed_attempts, 60 * 5)  # Store the failed attempts for 5 minutes
+
+        return response
+
+
+class PasswordResetCodeView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email')
+        user = CustomUser.objects.filter(email=email).first()
+        if not user:
+            return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        code = get_random_string(length=6)
+        PasswordResetCode.objects.create(user=user, code=code)
+
+        send_mail(
+            'Password reset code',
+            f'Your password reset code is {code}',
+            'from@example.com',
+            [email],
+            fail_silently=False,
+        )
+
+        return Response({'detail': 'Code sent'})
+
+
+class PasswordResetView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email')
+        code = request.data.get('code')
+        user = CustomUser.objects.filter(email=email).first()
+        if not user:
+            return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        reset_code = PasswordResetCode.objects.filter(user=user, code=code).first()
+        if not reset_code or timezone.now() - reset_code.created_at > timezone.timedelta(minutes=5):
+            return Response({'detail': 'Invalid or expired code'}, status=status.HTTP_400_BAD_REQUEST)
+
+        new_password = get_random_string(length=10)
+        user.set_password(new_password)
+        user.save()
+
+        send_mail(
+            'New password',
+            f'Your new password is {new_password}',
+            'from@example.com',
+            [email],
+            fail_silently=False,
+        )
+
+        return Response({'detail': 'New password sent'})
 
 
 # Lists

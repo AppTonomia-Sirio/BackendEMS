@@ -243,6 +243,25 @@ class UserPolymorphicSerializer(PolymorphicSerializer):
     }
 
 
+class RestorePasswordSerializer(serializers.ModelSerializer):
+    special_code = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = CustomUser
+        fields = ("email", "password", "special_code")
+        extra_kwargs = {
+            "password": {"write_only": True},
+        }
+
+    def update(self, instance, validated_data):
+        if validated_data.get('special_code') == instance.special_code:
+            instance.set_password(validated_data["password"])
+            instance.save()
+            return instance
+        else:
+            raise serializers.ValidationError({"special_code": "Invalid special code"})
+
+
 class HomeSerializer(serializers.ModelSerializer):
     # Serializer for Location model
     class Meta:
