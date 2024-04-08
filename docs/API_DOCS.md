@@ -139,11 +139,11 @@ The response will be:
 To log in, we need to send a `POST` request to `/users/login/` with the following data:
 ```json
 {
-    "email": "...",
+    "username": "...",
     "password": "..."
 }
 ```
-The `email` field is a string containing the email of the user.
+The `username` field is a string containing the email of the user.
 The `password` field is a string containing the password of the user.
 
 The response will be:
