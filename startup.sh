@@ -1,3 +1,4 @@
 #!/bin/sh
 
-echo $PATH
+python manage.py migrate --no-input
+
