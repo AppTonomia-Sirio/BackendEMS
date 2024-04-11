@@ -25,7 +25,7 @@ To install the project, follow these steps:
 
 1. Clone the repository
 ```
-git clone https://github.com/AppTonomia-Sirio/Backend.git
+git clone https://github.com/AppTonomia-Sirio/BackendEMS.git
 ```
 2. Create a virtual environment
 ```
